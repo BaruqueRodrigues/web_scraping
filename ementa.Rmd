@@ -1,0 +1,44 @@
+---
+title: "Ementa WebScraping"
+output: html_notebook
+autor: Baruque Rodrigues
+email: quemuel.baruque@ufpe.br
+
+---
+
+
+## Descrição do Curso
+1. O que é Webscraping? 
+
+Como eu já disse antes é o  processo  de  minerar  ou  coletar  informações  e/ou dados,  que  são  estruturados, em formato de tabelas  ou  não  estruturados como em estruturas de texto. Por que fazer webscraping? por que ele leva muito menos tempo que um humano, ou grupo de humanos levaria para a coletar a informação, por que ele é transparente e pode ter seus critérios avaliados, e por que ele evita que erros sejam cometidos. 
+
+2. O que vai ser apresentado no curso? 
+
+Ferramentas para uma pessoa que já está além do nível iniciante em R pode usar para raspar informações para a maiorias das página da internet que seja raspável. Essas ferramentas vão desde como identificar os nodes alvos de um html, trazes esses nodes para o ambiente do R e sistematizar as informações desejadas em um formato que possa ser consumido por um analista de dados.
+
+3. O que eu preciso saber para acompanhar o curso?
+
+Instalar e usar o Rstudio, pipear funções, ter experiência com os verbos do dplyr, tidyr e stringr. 
+
+4. Como será a dinâmica do curso?
+
+1/4 dos encontros será dedicada a uma breve apresentação do que a gente a vai fazer, sobre as funções que a gente vai usar e como usá-las, 2/4 dos encontros serão dedicados a programar, vendo exemplos práticos de raspagens de dados e de como sistematizar os dados raspados e 1/4 dos encontros dedicados a exercícios e correção dos exercícios.
+
+## O Programa
+
+1. O que é Webscraping;
+2. Limites Éticos do Webscraping ~~(fugindo de ações legais)~~;
+3. Raspando dados de Páginas Estáticas;
+  + Eu preciso escrever um código para conseguir isso? Dicas para poupar tempo e         Ferramentas que auxiliam a raspagem;
+  + Entendendo o mínimo de marcação de texto;   
+  + Rvest (?) e xml2;
+  + Regex para webscraping;
+  + Reshaping e/ou Wrangling
+  + Interando seu código para raspar multiplas páginas
+4. Conectando a APIS
+  + Acessando uma API;
+  + usando o httr para fazer a requisição;
+  + wrang, transform and tidy
+5. Disponbilizando para a comunidade
+
+
