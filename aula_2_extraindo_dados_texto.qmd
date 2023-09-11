@@ -1,0 +1,148 @@
+---
+title: "aula_2_extraindo_dados_pdf"
+format: html
+editor: visual
+---
+
+### Extraindo Dados de PDF
+
+O que fazer quando os dados que queremos trabalhar são disponibilizados através de uma tabela em PDF, ou em imagem?
+
+Por mais que os dados estejam disponibilizados, é muito complicado transpô-los para um ambiente computacional onde podemos analisar os dados, para resolver o problema usamos técnicas de OCR (Optical Character Recognition) que é uma técnica que envolve a extração de dados de imagens ou documentos digitalizados. O OCR é um processo que converte texto contido em uma imagem em texto editável, tornando possível a análise e extração desses dados.
+
+#### Caso de Trabalho - Extraindo dados do Indice de Sustentabilidade da Limpeza Urbana
+
+No nosso caso utilizaremos os dados disponibilizados pelo Indice de Sustentabilidade Urbana, O ISLU é fruto da cooperação técnica entre a consultoria PwC e o Sindicado Nacional das Empresas de Limpeza Urbana (SELUR) formulado com o objetivo de mensurar a aderência dos municípios brasileiros à PNRS, e vem sendo publicada desde 2016, sempre com dados de referência relativos aos dados municipais de dois anos anteriores à data da publicação.
+
+Os dados são disponibilizados em cada um dos relátorios e podem ser acessados [aqui](https://selur.org.br/wp-content/uploads/2021/05/ISLU-2020-a.pdf). Baixe o relatório, pois utilizaremos ele nessa análise, ou utilize o código abaixo para baixar os dados.
+
+```{r, warning=FALSE}
+library(tidyverse)
+
+```
+
+```{r,eval=FALSE}
+dados <- download.file("https://selur.org.br/wp-content/uploads/2021/05/ISLU-2020-a.pdf", "dados/ISLU-2020-a.pdf")
+```
+
+Para extrair as tabelas é muito simples, utilizaremos o pacote [`tabulizer`](https://github.com/ropensci/tabulizer) e a função `extract_tables`. O procedimento é muito simples.
+
+```{r}
+dataset <- tabulizer::extract_tables(
+  #indicamos o diretório do arquivo que terá as tabelas extraídas
+  file = "dados/ISLU-2020-a.pdf",
+  #indicamos o formato do dado que será obtido no r
+  output = "data.frame")
+
+dataset
+```
+
+Observe que o output desse código foi uma lista de datasets, nosso trabalho agora é preparar esses dados para serem analisados. Primeiro vamos mudar o formato dos dados, iremos transformar esse conjunto de listas em um dataset, onde a 1° coluna conterá todos os datasets, e cada linha vai conter um dos data.frames
+
+```{r}
+dataset %>% 
+  tibble(datasets =. )
+```
+
+Nosso objetivo agora é transformar esse dataset que contém datasets dentro das celulas da coluna datasets em um conjuto de dados comum.Vamos criar uma nova estrutura de dados, transformando os dados para texto e finalmente "desenrola" os elementos da lista para formar um novo conjunto de dados.
+
+```{r}
+dataset %>% 
+  tibble(datasets =. ) %>% 
+  #Transforma todas as variáveis para character, para evitar erro de empilhamento de variáveis com tipos diferentes
+  mutate(datasets = map(datasets, ~.x %>% mutate_all(as.character))) %>% 
+  #desenlistando os dados para um formato tabular
+  unnest(datasets)
+```
+
+### Caso reddit - Extraindo dados de textos 
+
+Um outro problema que podemos ter é extrair dados de textos corridos. Alguns sites implementam dificuldades para coletar alguns tipos de dados, afim de evitar que robos coletem dados, como no caso da mudança de politica do reddit para evitar que os dados sejam coletados para treinar modelos de inteligência artificial. Outro exemplo foi quando o twitter mudou a regras da API, diminuindo significativamente o número de tweets coletados.
+
+Uma estratégia para driblar esses problemas é copiar os dados de texto e usar as marcações de linguagem natural para proceder as análises.
+
+Baixe os dados utilizando o código abaixo
+
+```{r}
+dados <- read_csv("https://raw.githubusercontent.com/BaruqueRodrigues/web_scraping/main/txt_reddit.txt", col_names = FALSE)
+
+dados
+```
+
+Olhar pro dataset acima e não ver ele estruturado em colunas, e cada linha da primeira coluna não ter nenhum sentido pode ser aterrador, mas após superar o primeiro espanto e olhar com cuidado como os dados estão dispostos podemos ver que existe sim uma estrutura de como os dados estão apresentados.
+
+A cada 4 linhas a mesma estrutura se repete, onde na primeira linha temos um valor numérico, a saber o número de votos que o tópico teve no reddit, na segunda linha o título do tópico, na terceira linha a descrição do tópico e na quarta as interações com o tópico. A partir disso podemos começar a estruturar nossos dados
+
+```{r}
+dados %>% 
+   mutate(
+     #criar uma coluna que repita os termos votos, titulo, descricao e iteracao 26x
+     index = rep( 
+                 c("votos", "titulo",
+                   "descricao", "interacao"), 
+                     26)
+     )
+```
+
+Agora podemos transformar esse dataset com algum nível de estrutura em algo mais tabular, para isso vamos criar colunas a partir da coluna index, e essas colunas serão preenchidas com os valores da coluna X1, para isso vamos utilizar a função pivot_wider,
+
+```{r, warning=FALSE}
+dados %>% 
+   mutate(
+     #criar uma coluna que repita os termos votos, titulo, descricao e iteracao 26x
+     index = rep( 
+                 c("votos", "titulo",
+                   "descricao", "interacao"), 
+                     26)
+     ) %>% 
+  #criando novas colunas com base nos valores da coluna index
+  pivot_wider(
+    names_from = index, # os titulos das novas colunas virão da var index
+    values_from = X1 # os valores serão preenchidos com a coluna X1
+    ) %>% 
+  unnest_longer(everything())
+```
+
+Agora que temos algumas variáveis estruturadas podemos implementar transformações no dataset, criando algumas variáveis importantes para que ele fique pronto para a etapa de analise.
+
+```{r, warning=FALSE}
+dados_organizados <- dados %>% 
+   mutate(
+     #criar uma coluna que repita os termos votos, titulo, descricao e iteracao 26x
+     index = rep( 
+                 c("votos", "titulo",
+                   "descricao", "interacao"), 
+                     26)
+     ) %>% 
+  #criando novas colunas com base nos valores da coluna index
+  pivot_wider(
+    names_from = index, # os titulos das novas colunas virão da var index
+    values_from = X1 # os valores serão preenchidos com a coluna X1
+    ) %>% 
+  unnest_longer(everything()) %>% 
+  #Criando novas colunas para enriquecer nossas análises
+  mutate(
+    #busca um padrão de regez que contenham www.
+    fonte_noticias = str_extract(titulo ,"\\(([\\w\\.]+)\\)"),
+    #busca um padrão que contenha 1 digito um espaço e a palavra comentarios
+    n_comentarios = str_extract(interacao, "[\\d?]+\\s+comentários"),
+    #busca um padrão que contenha a palavra submitted e um digito
+    tempo_de_vida = str_extract(descricao, "submitted+\\s+[\\d?]+\\s+[\\w]+"),
+    #busca o padrão  comece com ago by, seguida de uma ou mais letras, números
+    autor = str_extract(descricao, "ago\\sby\\s[\\w]+")) %>% 
+  # Reorganizando as colunas do dataset
+  relocate(votos, titulo, interacao, n_comentarios, tempo_de_vida, autor, fonte_noticias) 
+
+dados_organizados
+  
+```
+
+Dando uma ultima polida
+
+```{r}
+dados_organizados %>% 
+select(-descricao, -interacao) %>%
+  mutate(n_comentarios = as.numeric(str_extract(n_comentarios, "[\\d?]")),
+         tempo_de_vida = str_remove(tempo_de_vida, "submitted "),
+         autor = str_remove(autor, "ago by "))
+```

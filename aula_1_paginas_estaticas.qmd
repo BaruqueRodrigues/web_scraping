@@ -1,0 +1,176 @@
+---
+title: "aula_1_paginas_estaticas"
+format: html
+editor: visual
+---
+
+## Extraindo Dados de Páginas Estáticas
+
+Páginas estáticas são páginas que possuem conteúdo que não muda dinamicamente com o tempo ou em resposta a interações do usuário. Páginas estáticas são aquelas cujo conteúdo é o mesmo sempre que são acessadas, a menos que sejam manualmente atualizadas pelo proprietário do site.
+
+Neste contexto, "estáticas" se refere ao fato de que o conteúdo da página não é gerado dinamicamente a partir de uma fonte de dados em tempo real, como um banco de dados ou um serviço que fornece informações atualizadas constantemente.
+
+```{r, message=FALSE, warning=FALSE}
+# Raspando Dados de Páginas Estáticas
+
+# Pacotes ---------------------------------------------------------
+library(tidyverse)
+library(rvest) # auxílio para raspagens de dados
+```
+
+### Extraindo Dados Já tabulados
+
+Em alguns casos nossos dados a serem raspados já estão estruturados em formato tabular, em casos como esse nosso trabalho é muito menor, pois só precisamos importar essa tabela para o ambiente do R
+
+Imagine que temos o seguinte problema, precisamos uma fonte que disponibilize os dados de população dos paises ao redor do globo, e encontramos esses dados na página do [wikipedia](#0), onde a existe uma tabela com os dados já sistematizados, todavia devido aos 192 casos a coleta manual está descartada, como coletamos esses dados?
+
+De maneira muito simples:
+
+```{r}
+#Indicamos a url que contém a tabela que deverá ser lida
+url <- "https://pt.wikipedia.org/wiki/Lista_de_pa%C3%ADses_por_popula%C3%A7%C3%A3o"
+
+url |>
+  rvest::read_html() |> # função que executa a leitura do conteudo html ou xml da URL
+  rvest::html_table() # função que extrai as tabelas da url em formato tibble
+```
+
+O nosso código acima já coletou as tabelas disponibilizadas no link, todavia só nos interessa a 1 tabela. Para selecionar apenas a tabela alvo e não trazer todas as que estão contidas na página é muito simples:
+
+```{r}
+url <- "https://pt.wikipedia.org/wiki/Lista_de_pa%C3%ADses_por_popula%C3%A7%C3%A3o"
+
+url |>
+  rvest::read_html() |> # função que executa a leitura do conteudo html ou xml da URL
+  rvest::html_table() |> # função que extrai as tabelas da url em formato tibble
+  purrr::pluck(1) # função que seleciona o 1° elemento da lista 
+```
+
+Digamos que temos um outro problema, em que precisamos saber a chance que um time tem de vencer o outro no campeonato brasileiro, sabemos que o site [chance de gol](https://chancedegol.com.br/br23.htm) disponibiliza essas informações, entretanto como fazemos para coletar esses dados?
+
+```{r}
+"https://chancedegol.com.br/br23.htm" %>% #link que será raspado
+  rvest::read_html() %>% #lendo o dados em formato html
+  rvest::html_table() %>%  # lendo apenas as tabelas da página
+  purrr::pluck(8) #selecionando apenas as tabelas com as probabilidades
+```
+
+Em alguns casos os dados ficam estruturados de maneira incorreta e precisamos fazer a correção manualmente
+
+```{r}
+# Manipulação dos Dados
+
+"https://chancedegol.com.br/br23.htm" |> # url que será raspada
+  rvest::read_html() |> # lendo os dados em formato html
+  rvest::html_table() |> # lendo as tabelas das páginas
+  purrr::pluck(2) |> # selecionando a tabela 2
+  dplyr::slice(64:281) |> # selecionando as linhas que contém as informações desejadas
+  dplyr::select(X1:X6) |> # selecionando as colunas com informações válidas
+  janitor::row_to_names(row_number = 1) # corrigindo o nome das colunas
+```
+
+### Lidando com dados não estruturados - Caso Amazon 
+
+Muitas vezes precisamos raspar dados que estão em um formato não estruturado, ou seja, eles estão dispostos de maneira que um humano consegue compreender a informação, todavia não estão estruturados de maneira que um software possa analisar os dados, nesse caso precisamos estruturar os dados. O nosso caso em questão será o site da amazon, mais especificamente as [anilhas olimpicas](https://www.amazon.com.br/s?k=anilhas+olimpica&dc&__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3G7N1VMRIZIDT&sprefix=anilhas+olimipica%2Caps%2C166&ref=a9_sc_1) vendidas na amazon.
+
+Nosso primeiro passo é armazenar a url é um objeto, já que precisaremos coletar as informações dela multiplas vezes
+
+```{r}
+url <- "https://www.amazon.com.br/s?k=anilhas+olimpica&dc&__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3G7N1VMRIZIDT&sprefix=anilhas+olimipica%2Caps%2C166&ref=a9_sc_1"
+
+```
+
+Em seguida iremos identificar em qual objeto html está disponibilizada a nossa informação, nesse caso no nodo `.s-line-clamp-4`, que é identificado ao inspecionar o elemento.
+
+```{r}
+url |>
+  read_html() |> # le o código html da página
+  html_nodes(".s-line-clamp-4") |> #busca o nodo identificado
+  html_text() #transforma o resultado em texto
+```
+
+Em seguida fazemos o mesmo procedimento para identificar o preço
+
+```{r}
+url |>
+  read_html() |> # lê o código html da página
+  html_nodes(".a-offscreen") |> #lê o nodo especifico
+  html_text() #transforma o nodo em texto
+```
+
+Podemos também capturar todo o anúncio e partir dele coletar a nossa informação desejada.
+
+```{r}
+# Capturando todo o anúncio  
+url |>
+  read_html() |> # Lê a página
+  html_nodes('.s-card-border' ) |> # lê o nodo em especifico
+  html_text() #transforma em texto
+  
+```
+
+Em alguns casos a melhor estratégia é estruturar a informação em formato de dataset a partir de um campo mais ou menos estruturado em linguagem natural. Nesse caso vamos usar o nodo que contém toda a informação do anuncio e vamos estruturar o dataset a partir dele.
+
+```{r}
+anuncio_amazon <- url|> # url que será raspada
+  read_html() |> # lendo o html da página
+  html_nodes('.s-card-border' )  #lendo as informações do anuncio
+
+tibble(
+  # criamos uma coluna com o texto do título do anuncio
+  nome = anuncio_amazon |> html_node(".s-line-clamp-4") |> html_text(trim = T),
+  # criamos uma coluna com o valor do anuncio
+  valor = anuncio_amazon |> html_node(".a-offscreen") |> html_text(trim = T)
+) 
+
+
+```
+
+Muito bom, conseguimos raspar os dados dos anuncios da amazon, entretanto só raspamos a primeira página, como fazemos para raspar todas as páginas disponíveis?
+
+Muito simples, criamos uma pequena função para raspar página a página do site, todavia precisamos criar o link que contem as multiplas páginas.
+
+```{r}
+# Capturamos a url
+url <- "https://www.amazon.com.br/s?k=whey+protein&page=2&__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&qid=1656355614&ref=sr_pg_2"
+
+#quebramos a url em etapas estaticas
+url_pt_1 <- "https://www.amazon.com.br/s?k=whey+protein&page="
+
+url_pt_2 <- "&__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=Q1X7R7FNY9U7&qid=1656354306&sprefix=whey+prote%2Caps%2C173&ref=sr_pg_"
+
+# e em itens que sofrem variação
+url_iteracao <- 1:4
+
+#concatenamos em uma série de strings
+url <- paste0(url_pt_1, url_iteracao, url_pt_2, url_iteracao)
+
+```
+
+Com o link criado, criamos agora uma função que extrai a informação desejada, ou seja os preços e o nome dos produtos da amazon.
+
+```{r}
+pega_info_anuncio<- function(url_alvo){
+  
+  #Primeiro criamos o objeto que vai receber o nodo que contém todas as informações dos produtos
+  anuncio_amazon <- url_alvo |>
+    read_html() |>
+    html_nodes('.s-card-border' ) 
+  
+  #Na segunda parte trasnformamos isso em um dataset
+  
+  anuncios_amazon_df <- tibble(
+    nome = anuncio_amazon |> html_node(".s-line-clamp-4") |> html_text(trim = T),
+    valor = anuncio_amazon |> html_node(".a-offscreen") |> html_text(trim = T)
+    )
+  }
+```
+
+Agora fazemos a iteração, aplicando essa função a cada uma das páginas da amazon
+
+```{r}
+map_dfr(
+  url,
+  pega_info_anuncio
+)
+```

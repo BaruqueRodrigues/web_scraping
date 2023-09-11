@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>aula_2_extraindo_dados_pdf</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="aula_2_extraindo_dados_texto_files/libs/clipboard/clipboard.min.js"></script>
+<script src="aula_2_extraindo_dados_texto_files/libs/quarto-html/quarto.js"></script>
+<script src="aula_2_extraindo_dados_texto_files/libs/quarto-html/popper.min.js"></script>
+<script src="aula_2_extraindo_dados_texto_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="aula_2_extraindo_dados_texto_files/libs/quarto-html/anchor.min.js"></script>
+<link href="aula_2_extraindo_dados_texto_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="aula_2_extraindo_dados_texto_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="aula_2_extraindo_dados_texto_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="aula_2_extraindo_dados_texto_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="aula_2_extraindo_dados_texto_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">aula_2_extraindo_dados_pdf</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="extraindo-dados-de-pdf" class="level3">
+<h3 class="anchored" data-anchor-id="extraindo-dados-de-pdf">Extraindo Dados de PDF</h3>
+<p>O que fazer quando os dados que queremos trabalhar são disponibilizados através de uma tabela em PDF, ou em imagem?</p>
+<p>Por mais que os dados estejam disponibilizados, é muito complicado transpô-los para um ambiente computacional onde podemos analisar os dados, para resolver o problema usamos técnicas de OCR (Optical Character Recognition) que é uma técnica que envolve a extração de dados de imagens ou documentos digitalizados. O OCR é um processo que converte texto contido em uma imagem em texto editável, tornando possível a análise e extração desses dados.</p>
+<section id="caso-de-trabalho---extraindo-dados-do-indice-de-sustentabilidade-da-limpeza-urbana" class="level4">
+<h4 class="anchored" data-anchor-id="caso-de-trabalho---extraindo-dados-do-indice-de-sustentabilidade-da-limpeza-urbana">Caso de Trabalho - Extraindo dados do Indice de Sustentabilidade da Limpeza Urbana</h4>
+<p>No nosso caso utilizaremos os dados disponibilizados pelo Indice de Sustentabilidade Urbana, O ISLU é fruto da cooperação técnica entre a consultoria PwC e o Sindicado Nacional das Empresas de Limpeza Urbana (SELUR) formulado com o objetivo de mensurar a aderência dos municípios brasileiros à PNRS, e vem sendo publicada desde 2016, sempre com dados de referência relativos aos dados municipais de dois anos anteriores à data da publicação.</p>
+<p>Os dados são disponibilizados em cada um dos relátorios e podem ser acessados <a href="https://selur.org.br/wp-content/uploads/2021/05/ISLU-2020-a.pdf">aqui</a>. Baixe o relatório, pois utilizaremos ele nessa análise, ou utilize o código abaixo para baixar os dados.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.2     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.1     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dados <span class="ot">&lt;-</span> <span class="fu">download.file</span>(<span class="st">"https://selur.org.br/wp-content/uploads/2021/05/ISLU-2020-a.pdf"</span>, <span class="st">"dados/ISLU-2020-a.pdf"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para extrair as tabelas é muito simples, utilizaremos o pacote <a href="https://github.com/ropensci/tabulizer"><code>tabulizer</code></a> e a função <code>extract_tables</code>. O procedimento é muito simples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="ot">&lt;-</span> tabulizer<span class="sc">::</span><span class="fu">extract_tables</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#indicamos o diretório do arquivo que terá as tabelas extraídas</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"dados/ISLU-2020-a.pdf"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#indicamos o formato do dado que será obtido no r</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"data.frame"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>dataset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+              Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1                 Abaré BA      0,623      0,896      0,000      0,537 0,527
+2            Alagoinhas BA      0,693      0,678      0,001      1,000 0,604
+3              Amargosa BA      0,676      0,740      0,000      0,898 0,589
+4             Andorinha BA      0,537      0,928      0,000      0,541 0,506
+5                 Aporá BA      0,595      0,824      0,000      0,710 0,540
+6           Baianópolis BA       0,49      0,919      0,000      0,622 0,506
+7                 Barra BA      0,545      0,847      0,000      0,612 0,506
+8        Barra do Choça BA      0,573      0,833      0,001      0,592 0,508
+9       Barra do Mendes BA      0,609      0,854      0,000      0,941 0,602
+10       Barra do Rocha BA      0,585      0,848      0,000      0,000 0,385
+11            Barreiras BA      0,773      0,782      0,000      0,602 0,566
+12           Barro Alto BA       0,66      0,494      0,000      0,952 0,541
+13   Bom Jesus da Serra BA      0,535      0,848      0,000      0,792 0,543
+14              Brumado BA      0,676      0,804      0,038      0,217 0,462
+15           Buritirama BA      0,516      0,848      0,000      0,473 0,466
+16                 Caém BA      0,489      0,813      0,000      0,551 0,467
+17              Caetité BA      0,635      0,876      0,000      0,790 0,582
+18             Camaçari BA      0,783      0,660      0,001      1,000 0,630
+19              Candiba BA      0,589      0,891      0,000      0,749 0,561
+20            Cansanção BA      0,575      0,892      0,000      0,851 0,579
+21              Canudos BA      0,646      0,840      0,000      0,626 0,542
+22         Capim Grosso BA      0,732      0,602      0,000      0,557 0,502
+23     Cardeal da Silva BA      0,598      0,701      0,000      0,652 0,500
+24         Castro Alves BA      0,584      0,952      0,008      0,898 0,608
+25                 Catu BA      0,771      0,650      0,000      1,000 0,623
+26   Conceição da Feira BA      0,741      0,563      0,000      1,000 0,594
+27 Contendas do Sincorá BA      0,552      0,752      0,000      0,372 0,434
+28            Cordeiros BA      0,501      0,871      0,000      0,000 0,362
+29               Coribe BA       0,55      0,587      0,000      0,815 0,495
+30          Cravolândia BA      0,656      0,542      0,000      0,588 0,470
+31           Crisópolis BA      0,577      0,737      0,000      0,631 0,497
+32       Cruz das Almas BA      0,787      0,448      0,000      0,717 0,521
+33               Curaçá BA      0,648      0,815      0,000      0,916 0,601
+34        Dias d' Ávila BA      0,771      0,546      0,000      1,000 0,600
+35           Entre Rios BA      0,701      0,588      0,000      0,513 0,478
+36        Érico Cardoso BA      0,566      0,982      0,000      0,959 0,620
+37            Esplanada BA      0,706      0,718      0,015      0,284 0,462
+38    Euclides da Cunha BA      0,551      0,789      0,000      0,636 0,501
+39        Feira da Mata BA      0,663      0,621      0,000      0,902 0,559
+   Classe
+1       D
+2       C
+3       D
+4       D
+5       D
+6       D
+7       D
+8       D
+9       C
+10      E
+11      D
+12      D
+13      D
+14      E
+15      E
+16      E
+17      D
+18      C
+19      D
+20      D
+21      D
+22      D
+23      D
+24      C
+25      C
+26      D
+27      E
+28      E
+29      E
+30      E
+31      E
+32      D
+33      C
+34      C
+35      E
+36      C
+37      E
+38      D
+39      D
+
+[[2]]
+                   Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I
+1                  Pindobaçu BA        0,7      0,695      0,000      0,499
+2                   Pintadas BA      0,598      0,794      0,000      0,470
+3             Piraí do Norte BA      0,632      0,759      0,000      0,738
+4                  Potiraguá BA      0,735      0,858      0,000      0,940
+5           Presidente Dutra BA      0,686      0,761      0,000      0,522
+6  Presidente Tancredo Neves BA      0,513      0,702      0,000      0,631
+7                    Remanso BA      0,586      0,740      0,000      1,000
+8         Riachão do Jacuípe BA      0,635      0,694      0,000      0,351
+9               Rio do Pires BA      0,561      0,811      0,000      0,714
+10                  Rio Real BA      0,625      0,703      0,000      0,337
+11                   Rodelas BA      0,714      0,760      0,000      0,539
+12                  Salvador BA       0,82      0,842      0,004      1,000
+13             Santa Bárbara BA      0,625      0,745      0,000      0,785
+14                Santa Inês BA      0,693      0,621      0,000      0,681
+15             Santo Estêvão BA      0,637      0,852      0,001      0,300
+16    São Francisco do Conde BA      0,769      0,848      0,001      1,000
+17          Senhor do Bonfim BA      0,743      0,844      0,000      0,758
+18           Sítio do Quinto BA      0,669      0,708      0,000      0,960
+19                Sobradinho BA      0,712      0,747      0,000      0,783
+20                   Taperoá BA      0,547      0,804      0,000      0,645
+21       Teixeira de Freitas BA      0,758      0,704      0,000      1,000
+22           Teodoro Sampaio BA      0,638      0,604      0,000      1,000
+23                    Utinga BA      0,624      0,552      0,300      0,000
+24                   Valença BA      0,699      0,671      0,000      0,395
+25            Várzea do Poço BA      0,594      0,884      0,000      0,829
+26      Vitória da Conquista BA      0,757      0,771      0,012      1,000
+    ISLU Classe
+1  0,499      E
+2  0,481      E
+3  0,543      D
+4  0,645      C
+5  0,514      D
+6  0,467      E
+7  0,582      D
+8  0,444      E
+9  0,526      D
+10 0,440      E
+11 0,527      D
+12 0,683      C
+13 0,548      D
+14 0,520      D
+15 0,470      E
+16 0,667      C
+17 0,604      C
+18 0,593      D
+19 0,577      D
+20 0,505      D
+21 0,631      C
+22 0,569      D
+23 0,398      E
+24 0,470      E
+25 0,579      D
+26 0,648      C
+
+[[3]]
+[1] Município  UF         Dimensão.E Dimensão.S Dimensão.R Dimensão.I ISLU      
+[8] Classe    
+&lt;0 linhas&gt; (ou row.names de comprimento 0)
+
+[[4]]
+  Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU Classe
+1  Brasília DF       0,87      0,910      0,013      0,664 0,643      C
+
+[[5]]
+                 Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1   Barra de São Francisco ES      0,776      0,586      0,025      0,653 0,539
+2       Bom Jesus do Norte ES      0,788      0,842      0,137      1,000 0,702
+3  Cachoeiro de Itapemirim ES      0,806      0,799      0,005      1,000 0,669
+4                 Colatina ES      0,791      0,859      0,009      1,000 0,679
+5       Conceição da Barra ES      0,774      0,667      0,002      0,765 0,577
+6     Conceição do Castelo ES      0,622      0,872      0,048      1,000 0,634
+7         Domingos Martins ES      0,734      0,896      0,000      1,000 0,666
+8    Governador Lindenberg ES      0,629      0,823      0,010      0,610 0,531
+9                  Ibatiba ES       0,75      0,973      0,118      0,871 0,686
+10                  Iconha ES      0,808      0,919      0,001      1,000 0,696
+11                 Itarana ES      0,755      0,859      0,014      1,000 0,668
+12              João Neiva ES      0,825      0,412      0,000      1,000 0,588
+13            Mantenópolis ES      0,659      0,868      0,000      1,000 0,635
+14           Mimoso do Sul ES      0,688      0,858      0,000      1,000 0,642
+15                Montanha ES      0,763      0,580      0,031      0,743 0,555
+16                Mucurici ES      0,729      0,842      0,003      0,659 0,578
+17                   Muqui ES      0,698      0,832      0,000      1,000 0,640
+18               Pinheiros ES      0,754      0,833      0,017      0,775 0,613
+19                   Piúma ES      0,796      0,720      0,000      1,000 0,647
+20        Santa Leopoldina ES      0,545      0,905      0,069      1,000 0,620
+21   Santa Maria de Jetibá ES      0,767      0,875      0,010      1,000 0,674
+22            Santa Teresa ES      0,798      0,917      0,111      1,000 0,717
+23              São Mateus ES      0,747      0,953      0,012      0,698 0,619
+24                   Serra ES      0,815      0,570      0,001      1,000 0,620
+25              Vila Velha ES      0,858      0,565      0,000      1,000 0,633
+26                 Vitória ES       0,89      0,732      0,008      1,000 0,683
+   Classe
+1       D
+2       B
+3       C
+4       C
+5       D
+6       C
+7       C
+8       D
+9       C
+10      C
+11      C
+12      D
+13      C
+14      C
+15      D
+16      D
+17      C
+18      C
+19      C
+20      C
+21      C
+22      B
+23      C
+24      C
+25      C
+26      C
+
+[[6]]
+[1] Município  UF         Dimensão.E Dimensão.S Dimensão.R Dimensão.I ISLU      
+[8] Classe    
+&lt;0 linhas&gt; (ou row.names de comprimento 0)
+
+[[7]]
+                      Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I
+1                  Afonso Cunha MA      0,533      0,874      0,000      1,000
+2                     Alcântara MA      0,504      0,934      0,000      0,452
+3                         Arari MA      0,644      0,877      0,000      0,240
+4                    Buriticupu MA       0,57      0,793      0,000      0,000
+5                    Buritirana MA      0,684      0,903      0,000      0,840
+6                        Cedral MA      0,582      0,805      0,000      0,981
+7                          Codó MA      0,653      0,963      0,000      0,735
+8                   Davinópolis MA      0,688      0,926      0,000      0,860
+9              Esperantinópolis MA      0,644      0,909      0,000      0,546
+10            Governador Archer MA      0,589      0,837      0,000      0,760
+11           Humberto de Campos MA      0,482      0,915      0,000      0,540
+12                   Imperatriz MA      0,794      0,754      0,000      0,646
+13                       Jatobá MA      0,525      0,868      0,000      0,888
+14                  João Lisboa MA      0,629      0,881      0,006      0,856
+15                  Lima Campos MA      0,582      0,909      0,000      0,709
+16              Matões do Norte MA      0,476      0,919      0,000      0,580
+17             Miranda do Norte MA       0,67      0,852      0,000      0,853
+18                       Monção MA      0,584      0,919      0,000      0,588
+19               Paço do Lumiar MA       0,65      0,757      0,000      0,485
+20                  Paulo Ramos MA      0,538      0,826      0,000      0,000
+21              Ribamar Fiquene MA      0,706      0,922      0,000      0,697
+22             São João Batista MA      0,467      0,957      0,000      0,896
+23            São João do Soter MA      0,453      0,789      0,000      0,265
+24                     São Luís MA      0,836      0,690      0,001      0,418
+25 São Raimundo das Mangabeiras MA       0,64      0,809      0,000      0,312
+26          Serrano do Maranhão MA      0,462      0,970      0,000      0,744
+27                        Timon MA       0,71      0,828      0,000      1,000
+28            Vitória do Mearim MA       0,56      0,753      0,000      0,230
+    ISLU Classe
+1  0,594      D
+2  0,477      E
+3  0,464      E
+4  0,368      E
+5  0,616      C
+6  0,591      D
+7  0,596      D
+8  0,627      C
+9  0,539      D
+10 0,552      D
+11 0,485      E
+12 0,576      D
+13 0,565      D
+14 0,597      D
+15 0,554      D
+16 0,493      E
+17 0,602      C
+18 0,530      D
+19 0,493      E
+20 0,364      E
+21 0,596      D
+22 0,568      D
+23 0,386      E
+24 0,525      D
+25 0,463      E
+26 0,536      D
+27 0,643      C
+28 0,406      E
+
+[[8]]
+                  Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I
+1                  Eldorado MS      0,718      0,825      0,009      0,678
+2                 Figueirão MS      0,628      0,889      0,000      0,993
+3        Glória de Dourados MS      0,728      0,458      0,018      0,505
+4                  Iguatemi MS      0,685      0,731      0,378      0,577
+5                 Inocência MS      0,774      0,820      0,031      0,837
+6                  Ivinhema MS      0,802      0,960      0,095      0,528
+7                    Jardim MS      0,796      0,731      0,029      0,591
+8                   Nioaque MS      0,596      0,860      0,012      0,725
+9     Novo Horizonte do Sul MS      0,752      0,968      0,000      0,999
+10                Paranaíba MS      0,772      0,938      0,022      0,886
+11                 Paranhos MS      0,564      0,921      0,073      0,821
+12           Porto Murtinho MS      0,672      0,800      0,000      0,875
+13 Rio Verde de Mato Grosso MS      0,728      0,902      0,000      0,265
+14     São Gabriel do Oeste MS      0,773      0,887      0,065      0,759
+15              Sidrolândia MS      0,678      0,936      0,000      0,627
+16                   Sonora MS      0,746      0,743      0,002      0,450
+17                  Terenos MS       0,59      0,853      0,192      1,000
+    ISLU Classe
+1  0,576      D
+2  0,628      C
+3  0,460      E
+4  0,603      C
+5  0,633      C
+6  0,620      C
+7  0,566      D
+8  0,554      D
+9  0,688      C
+10 0,668      C
+11 0,592      D
+12 0,596      D
+13 0,503      D
+14 0,638      C
+15 0,574      D
+16 0,515      D
+17 0,651      C
+
+[[9]]
+              Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1        Delfim Moreira MG      0,766      0,921      0,142      1,000 0,714
+2          Delfinópolis MG      0,816      0,883      0,000      0,807 0,648
+3                 Delta MG      0,744      0,893      0,011      1,000 0,671
+4      Desterro do Melo MG      0,604      0,885      0,000      1,000 0,620
+5             Divinésia MG      0,757      0,852      0,043      1,000 0,673
+6                Divino MG      0,706      0,753      0,000      0,778 0,576
+7          Dom Silvério MG      0,794      0,876      0,003      1,000 0,682
+8            Dom Viçoso MG      0,749      0,899      0,000      0,877 0,645
+9     Dores de Guanhães MG      0,644      0,872      0,500      0,985 0,738
+10      Dores do Indaiá MG      0,801      0,996      0,012      1,000 0,713
+11         Douradoquara MG      0,792      0,789      0,000      1,000 0,661
+12   Engenheiro Navarro MG      0,658      0,733      0,000      0,000 0,383
+13         Espera Feliz MG      0,761      0,852      0,000      0,798 0,621
+14    Estrela do Indaiá MG      0,771      0,929      0,000      0,354 0,543
+15          Eugenópolis MG      0,746      0,617      0,151      0,946 0,629
+16          Faria Lemos MG      0,729      0,826      0,153      0,832 0,646
+17           Felisburgo MG      0,629      0,890      0,046      0,840 0,605
+18               Ferros MG      0,512      0,890      0,189      0,841 0,598
+19           Fervedouro MG      0,691      0,880      0,000      0,904 0,627
+20              Formiga MG      0,827      0,855      0,058      1,000 0,701
+21   Fortaleza de Minas MG      0,766      0,748      0,167      0,803 0,637
+22     Francisco Dumont MG      0,634      0,841      0,000      0,850 0,587
+23       Frei Inocêncio MG       0,68      0,885      0,000      0,937 0,632
+24  Fronteira dos Vales MG      0,608      0,863      0,000      0,739 0,559
+25               Frutal MG      0,802      0,790      0,000      1,000 0,665
+26         Glaucilândia MG      0,614      0,776      0,000      0,819 0,559
+27 Governador Valadares MG      0,807      0,887      0,011      1,000 0,691
+28           Grão Mogol MG       0,66      0,909      0,000      0,953 0,634
+29             Grupiara MG       0,81      0,756      0,000      0,802 0,616
+30                Guapé MG      0,632      0,820      0,095      0,651 0,559
+31           Guaranésia MG      0,761      0,861      0,000      0,494 0,555
+32              Guaxupé MG      0,805      0,657      0,007      0,667 0,564
+33           Guimarânia MG      0,729      0,932      0,000      0,000 0,452
+34            Guiricema MG      0,769      0,835      0,140      0,881 0,669
+35              Ibirité MG      0,788      0,710      0,002      1,000 0,643
+36             Ilicínea MG      0,713      0,749      0,081      0,808 0,602
+37         Indianópolis MG      0,769      0,846      0,000      0,216 0,493
+38              Inhaúma MG      0,789      0,882      0,000      0,241 0,514
+39                Ipaba MG      0,742      0,879      0,000      1,000 0,665
+40              Ipanema MG      0,719      0,858      0,129      0,817 0,641
+41             Ipatinga MG      0,838      0,722      0,000      1,000 0,662
+42        Iraí de Minas MG      0,725      0,793      0,000      0,754 0,586
+43              Itabira MG      0,815      0,972      0,123      1,000 0,737
+44           Itabirinha MG      0,691      0,780      0,000      0,855 0,594
+   Classe
+1       B
+2       C
+3       C
+4       C
+5       C
+6       D
+7       C
+8       C
+9       B
+10      B
+11      C
+12      E
+13      C
+14      D
+15      C
+16      C
+17      C
+18      D
+19      C
+20      B
+21      C
+22      D
+23      C
+24      D
+25      C
+26      D
+27      C
+28      C
+29      C
+30      D
+31      D
+32      D
+33      E
+34      C
+35      C
+36      C
+37      E
+38      D
+39      C
+40      C
+41      C
+42      D
+43      B
+44      D
+
+[[10]]
+              Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1              Nova Era MG      0,782      0,966      0,061      1,000 0,711
+2             Nova Lima MG      0,861      0,839      0,027      1,000 0,701
+3           Nova Módica MG      0,738      0,745      0,000      0,754 0,579
+4            Nova Ponte MG      0,747      0,930      0,000      0,767 0,627
+5      Nova Porteirinha MG      0,746      0,858      0,000      0,799 0,617
+6          Nova Resende MG      0,767      0,852      0,058      0,709 0,616
+7            Nova União MG      0,722      0,716      0,031      0,817 0,588
+8              Oliveira MG      0,772      0,931      0,017      1,000 0,690
+9           Ouro Branco MG      0,833      0,687      0,000      1,000 0,652
+10            Ouro Fino MG      0,793      0,817      0,000      0,544 0,567
+11            Pai Pedro MG      0,513      0,830      0,011      0,287 0,423
+12                Pains MG      0,789      0,817      0,173      1,000 0,705
+13           Palmópolis MG      0,692      0,918      0,000      0,076 0,453
+14        Pará de Minas MG      0,805      0,852      0,090      1,000 0,700
+15               Passos MG      0,812      0,677      0,000      0,724 0,582
+16                Patis MG      0,727      1,000      0,000      0,163 0,502
+17       Patos de Minas MG      0,825      0,829      0,002      1,000 0,682
+18           Patrocínio MG      0,808      0,897      0,000      0,623 0,608
+19 Patrocínio do Muriaé MG      0,729      0,550      0,000      1,000 0,587
+20              Peçanha MG      0,598      0,777      0,000      0,827 0,556
+21         Pedra Bonita MG      0,506      0,881      0,000      0,745 0,530
+22      Pedra do Indaiá MG      0,656      0,934      0,000      0,770 0,598
+23       Pedro Leopoldo MG      0,784      0,676      0,016      1,000 0,637
+24                Pequi MG      0,769      0,804      0,002      0,331 0,510
+25              Perdões MG      0,819      0,714      0,000      0,898 0,631
+26            Periquito MG      0,645      0,824      0,257      0,901 0,655
+27             Pescador MG      0,695      0,743      0,000      0,808 0,576
+28              Pimenta MG       0,74      0,811      0,111      0,800 0,629
+29             Pirajuba MG      0,771      0,872      0,072      1,000 0,689
+30            Piranguçu MG      0,753      0,946      0,192      1,000 0,726
+31          Pirapetinga MG      0,758      0,680      0,197      0,641 0,590
+32               Piumhi MG      0,814      0,933      0,000      0,841 0,666
+33      Poços de Caldas MG      0,839      0,963      0,041      0,686 0,656
+34              Pocrane MG      0,688      0,833      0,129      0,816 0,625
+35               Pompéu MG       0,75      0,870      0,000      0,879 0,639
+36         Ponto Chique MG      0,619      0,708      0,000      0,904 0,564
+37          Porteirinha MG      0,672      0,803      0,003      0,803 0,582
+38                 Poté MG      0,637      0,873      0,000      0,531 0,525
+39           Pratápolis MG      0,771      0,694      0,118      0,918 0,641
+40  Presidente Olegário MG      0,697      0,938      0,076      0,774 0,630
+41   Prudente de Morais MG      0,769      0,747      0,019      0,796 0,603
+42              Raposos MG      0,809      0,782      0,010      1,000 0,668
+43              Recreio MG      0,747      0,541      0,050      0,571 0,507
+44           Resplendor MG      0,766      0,784      0,020      1,000 0,656
+   Classe
+1       B
+2       B
+3       D
+4       C
+5       C
+6       C
+7       D
+8       C
+9       C
+10      D
+11      E
+12      B
+13      E
+14      B
+15      D
+16      D
+17      C
+18      C
+19      D
+20      D
+21      D
+22      D
+23      C
+24      D
+25      C
+26      C
+27      D
+28      C
+29      C
+30      B
+31      D
+32      C
+33      C
+34      C
+35      C
+36      D
+37      D
+38      D
+39      C
+40      C
+41      C
+42      C
+43      D
+44      C
+
+[[11]]
+               Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1               Serrania MG      0,746      0,898      0,063      0,889 0,660
+2  Serranópolis de Minas MG      0,562      0,854      0,130      0,890 0,604
+3               Serranos MG      0,681      0,645      0,000      0,488 0,479
+4            Sete Lagoas MG      0,829      0,931      0,014      1,000 0,709
+5              Simonésia MG      0,692      0,740      0,198      0,890 0,637
+6              Tabuleiro MG      0,774      0,908      0,019      0,827 0,648
+7             Taiobeiras MG      0,766      0,755      0,000      0,606 0,558
+8                Timóteo MG      0,837      0,878      0,008      1,000 0,698
+9             Tiradentes MG      0,783      0,897      0,003      0,838 0,647
+10                 Tiros MG      0,702      0,902      0,000      0,653 0,580
+11         Três Corações MG      0,784      0,955      0,000      1,000 0,696
+12           Três Marias MG      0,809      0,841      0,000      0,697 0,612
+13           Tupaciguara MG      0,781      0,902      0,004      0,556 0,586
+14                   Ubá MG      0,791      0,444      0,012      1,000 0,586
+15            Uberlândia MG      0,844      0,717      0,009      1,000 0,664
+16                  Unaí MG      0,756      0,832      0,000      0,726 0,598
+17        União de Minas MG      0,656      0,720      0,000      0,540 0,499
+18       Várzea da Palma MG      0,727      0,656      0,000      0,800 0,566
+19             Veríssimo MG      0,627      0,948      0,000      0,779 0,593
+20                Viçosa MG      0,826      0,916      0,029      1,000 0,708
+21          Virginópolis MG       0,69      0,879      0,081      0,730 0,606
+22           Virgolândia MG      0,696      0,662      0,047      0,642 0,532
+   Classe
+1       C
+2       C
+3       E
+4       B
+5       C
+6       C
+7       D
+8       C
+9       C
+10      D
+11      C
+12      C
+13      D
+14      D
+15      C
+16      D
+17      E
+18      D
+19      D
+20      B
+21      C
+22      D
+
+[[12]]
+                        Município UF Dimensão.E Dimensão.S Dimensão.R
+1                     Pedro Régis PB      0,493      0,855      0,000
+2                     Pirpirituba PB      0,645      0,708      0,000
+3                          Pombal PB      0,678      0,961      0,000
+4                 Princesa Isabel PB      0,628      0,807      0,000
+5                 Riachão do Poço PB      0,685      0,976      0,000
+6         Riacho de Santo Antônio PB      0,622      0,866      0,000
+7            Salgado de São Félix PB      0,546      0,973      0,000
+8                      Santa Cruz PB       0,66      0,852      0,000
+9                    Santa Helena PB      0,613      0,843      0,000
+10                Santa Teresinha PB      0,634      0,570      0,096
+11           Santana dos Garrotes PB      0,624      0,936      0,000
+12                      São Bento PB      0,654      0,725      0,000
+13                  São Francisco PB      0,601      0,833      0,000
+14           São José de Piranhas PB      0,632      0,679      0,000
+15             São José do Bonfim PB      0,557      0,972      0,100
+16             São José do Sabugi PB      0,729      0,877      0,000
+17             São José dos Ramos PB      0,675      0,952      0,000
+18                     São Mamede PB      0,677      0,678      0,000
+19 São Sebastião de Lagoa de Roça PB      0,544      0,887      0,000
+20                           Sapé PB       0,65      0,800      0,029
+21                        Sobrado PB      0,441      0,950      0,000
+22                          Sousa PB       0,71      0,816      0,000
+23                           Sumé PB      0,666      0,835      0,000
+24                        Tavares PB      0,707      0,912      0,000
+   Dimensão.I  ISLU Classe
+1       0,850 0,543      D
+2       0,445 0,472      E
+3       0,958 0,653      C
+4       0,870 0,582      D
+5       0,878 0,641      C
+6       0,579 0,529      D
+7       0,441 0,497      E
+8       0,877 0,604      C
+9       0,879 0,587      D
+10      0,788 0,534      D
+11      0,917 0,620      C
+12      0,797 0,556      D
+13      0,827 0,569      D
+14      0,861 0,553      D
+15      0,902 0,625      C
+16      1,000 0,660      C
+17      0,942 0,646      C
+18      1,000 0,598      D
+19      1,000 0,601      C
+20      0,568 0,528      D
+21      0,692 0,513      D
+22      1,000 0,640      C
+23      0,683 0,560      D
+24      0,839 0,625      C
+
+[[13]]
+                 Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1             Grandes Rios PR      0,693      0,867      0,000      1,000 0,646
+2                   Guaíra PR      0,805      0,720      0,021      1,000 0,655
+3               Guaraniaçu PR      0,646      0,830      0,008      0,816 0,583
+4               Guarapuava PR      0,795      0,816      0,009      1,000 0,670
+5                  Ibiporã PR      0,806      1,000      0,085      1,000 0,732
+6                 Icaraíma PR       0,68      0,961      0,097      1,000 0,684
+7                 Iguaraçu PR      0,798      0,891      0,083      0,856 0,673
+8           Inácio Martins PR      0,637      0,994      0,060      0,967 0,662
+9             Indianópolis PR      0,726      0,859      0,175      0,800 0,650
+10                Ipiranga PR      0,562      0,965      0,002      0,958 0,615
+11                Itaguajé PR      0,733      0,922      0,000      0,631 0,590
+12            Itaipulândia PR      0,815      0,922      0,709      1,000 0,856
+13                  Itambé PR       0,82      0,939      0,000      0,819 0,664
+14       Itapejara D'Oeste PR      0,711      0,848      0,183      0,787 0,641
+15               Itaperuçu PR      0,706      0,950      0,000      1,000 0,669
+16                Ivaiporã PR      0,803      0,901      0,019      1,000 0,694
+17                   Ivaté PR      0,703      0,924      0,027      1,000 0,668
+18             Jaguariaíva PR      0,777      0,932      0,049      1,000 0,699
+19          Jandaia do Sul PR      0,793      0,898      0,062      1,000 0,700
+20                  Japurá PR      0,764      1,000      0,000      0,672 0,627
+21                Jesuítas PR      0,696      1,000      0,371      1,000 0,759
+22          Jundiaí do Sul PR      0,735      0,821      0,000      1,000 0,650
+23                 Jussara PR       0,78      0,914      0,075      1,000 0,702
+24      Laranjeiras do Sul PR      0,771      0,923      0,058      0,777 0,648
+25            Lidianópolis PR      0,773      0,860      0,048      1,000 0,682
+26               Lindoeste PR      0,638      0,887      0,065      0,818 0,606
+27                  Loanda PR      0,805      0,897      0,019      1,000 0,694
+28                  Lobato PR        0,8      0,897      0,156      0,640 0,643
+29                Londrina PR      0,843      0,904      0,000      1,000 0,704
+30                Luiziana PR      0,699      0,869      0,073      0,804 0,621
+31              Lunardelli PR      0,692      0,750      0,000      0,502 0,509
+32            Lupionópolis PR      0,762      0,861      0,027      1,000 0,673
+33                 Mamborê PR      0,801      0,921      0,446      0,759 0,740
+34              Mandaguaçu PR      0,774      0,890      0,000      0,728 0,618
+35 Marechal Cândido Rondon PR      0,792      0,927      0,098      1,000 0,714
+36            Maria Helena PR       0,72      0,944      0,065      1,000 0,687
+37                 Maringá PR      0,859      0,949      0,046      1,000 0,730
+38              Mariópolis PR      0,697      0,889      0,118      1,000 0,678
+39                  Maripá PR      0,704      0,943      0,173      1,000 0,705
+40              Marmeleiro PR      0,696      0,922      0,049      0,871 0,642
+41                 Marumbi PR      0,789      0,893      0,000      0,588 0,593
+42              Medianeira PR      0,801      0,973      0,035      1,000 0,713
+43                Mercedes PR      0,706      0,838      0,000      1,000 0,644
+44                 Mirador PR       0,68      0,713      0,081      1,000 0,625
+   Classe
+1       C
+2       C
+3       D
+4       C
+5       B
+6       C
+7       C
+8       C
+9       C
+10      C
+11      D
+12      A
+13      C
+14      C
+15      C
+16      C
+17      C
+18      C
+19      B
+20      C
+21      B
+22      C
+23      B
+24      C
+25      C
+26      C
+27      C
+28      C
+29      B
+30      C
+31      D
+32      C
+33      B
+34      C
+35      B
+36      C
+37      B
+38      C
+39      B
+40      C
+41      D
+42      B
+43      C
+44      C
+
+[[14]]
+                     Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I
+1         Rio Bonito do Iguaçu PR      0,516      0,973      0,230      0,735
+2                     Rolândia PR      0,798      0,817      0,023      1,000
+3                       Rondon PR      0,797      0,569      0,043      1,000
+4                Salgado Filho PR      0,773      0,870      0,163      0,871
+5             Salto do Itararé PR      0,708      0,926      0,000      0,361
+6              Salto do Lontra PR        0,8      0,942      0,000      1,000
+7  Santa Cruz de Monte Castelo PR       0,71      0,955      0,000      0,462
+8                     Santa Fé PR      0,758      0,943      0,000      1,000
+9                 Santa Helena PR      0,819      0,966      0,333      0,925
+10                  Santa Inês PR        0,8      0,854      0,000      0,902
+11        Santa Isabel do Ivaí PR      0,745      0,941      0,000      0,701
+12       Santa Izabel do Oeste PR      0,785      0,973      0,000      0,879
+13   Santa Terezinha de Itaipu PR      0,815      0,974      0,291      1,000
+14    Santo Antônio da Platina PR      0,755      0,842      0,038      1,000
+15   Santo Antônio do Sudoeste PR      0,767      0,948      0,000      0,842
+16       São Jerônimo da Serra PR      0,626      0,905      0,107      0,567
+17                    São João PR       0,74      0,972      0,072      0,717
+18         São João do Triunfo PR      0,573      0,968      0,000      1,000
+19     São Jorge do Patrocínio PR      0,676      0,876      0,091      1,000
+20       São José da Boa Vista PR      0,648      0,889      0,080      0,857
+21      São José das Palmeiras PR      0,689      0,800      0,000      0,834
+22           São Mateus do Sul PR      0,757      0,917      0,050      1,000
+23         São Pedro do Iguaçu PR      0,666      0,928      0,030      1,000
+24                     Sarandi PR      0,782      0,902      0,006      1,000
+25                      Sengés PR      0,652      0,939      0,000      0,892
+26      Serranópolis do Iguaçu PR      0,688      0,972      0,416      1,000
+27                   Sertaneja PR      0,792      0,810      0,000      1,000
+28                Sertanópolis PR      0,768      0,900      0,023      1,000
+29                      Tapira PR      0,688      0,963      0,526      1,000
+30             Teixeira Soares PR      0,707      0,925      0,200      0,876
+31                  Terra Rica PR      0,795      0,940      0,200      0,800
+32                  Terra Roxa PR      0,798      1,000      0,000      0,903
+33                      Tibagi PR      0,744      0,954      0,212      1,000
+34              Tijucas do Sul PR      0,713      0,950      0,032      1,000
+35                      Toledo PR      0,809      0,980      0,052      1,000
+36       Três Barras do Paraná PR      0,774      0,919      0,074      0,886
+37           Tuneiras do Oeste PR      0,693      0,984      0,000      1,000
+38                     Ubiratã PR      0,815      0,744      0,104      1,000
+39                    Umuarama PR       0,81      1,000      0,014      1,000
+40            União da Vitória PR      0,806      1,000      0,083      1,000
+41          Vera Cruz do Oeste PR      0,734      0,912      0,078      1,000
+42                    Vitorino PR      0,733      0,896      0,000      0,834
+43              Wenceslau Braz PR      0,739      0,779      0,127      0,596
+44                      Xambrê PR      0,693      0,947      0,173      1,000
+    ISLU Classe
+1  0,603      C
+2  0,675      C
+3  0,623      C
+4  0,681      C
+5  0,523      D
+6  0,698      C
+7  0,552      D
+8  0,685      C
+9  0,767      B
+10 0,657      C
+11 0,614      C
+12 0,674      C
+13 0,775      B
+14 0,669      C
+15 0,654      C
+16 0,560      D
+17 0,639      C
+18 0,629      C
+19 0,662      C
+20 0,622      C
+21 0,593      D
+22 0,689      C
+23 0,657      C
+24 0,685      C
+25 0,624      C
+26 0,760      B
+27 0,666      C
+28 0,683      C
+29 0,783      B
+30 0,681      C
+31 0,696      C
+32 0,689      C
+33 0,729      B
+34 0,678      C
+35 0,721      B
+36 0,676      C
+37 0,672      C
+38 0,682      C
+39 0,718      B
+40 0,732      B
+41 0,687      C
+42 0,629      C
+43 0,580      D
+44 0,702      B
+
+[[15]]
+                         Município UF Dimensão.E Dimensão.S Dimensão.R
+1                            Acauã PI      0,458      0,911      0,000
+2                Alegrete do Piauí PI      0,575      0,800      0,000
+3                Assunção do Piauí PI      0,475      0,920      0,000
+4                           Barras PI      0,548      0,861      0,000
+5                   Belém do Piauí PI      0,533      0,890      0,000
+6                 Betânia do Piauí PI      0,428      0,963      0,000
+7                 Buriti dos Lopes PI      0,558      0,798      0,000
+8            Campo Grande do Piauí PI      0,478      0,972      0,000
+9                      Campo Maior PI      0,681      1,000      0,533
+10                 Canto do Buriti PI      0,578      0,600      0,000
+11                Castelo do Piauí PI      0,614      0,787      0,000
+12                        Corrente PI      0,635      0,827      0,000
+13                Francisco Macedo PI      0,509      0,819      0,000
+14                      Fronteiras PI       0,63      0,819      0,000
+15                       Guadalupe PI       0,74      0,655      0,000
+16                          Inhuma PI      0,675      0,876      0,000
+17                        Itaueira PI      0,575      0,887      0,000
+18                 Jatobá do Piauí PI      0,456      0,941      0,000
+19        Morro do Chapéu do Piauí PI      0,519      0,934      0,000
+20                        Parnaíba PI      0,778      0,757      0,000
+21                          Pio IX PI      0,523      0,834      0,000
+22                   Queimada Nova PI      0,404      0,924      0,000
+23            Redenção do Gurgueia PI      0,602      0,890      0,000
+24 São Francisco de Assis do Piauí PI      0,466      0,819      0,000
+25           São João da Canabrava PI      0,596      0,880      0,000
+26               São José do Piauí PI      0,639      0,778      0,000
+27           São Miguel do Fidalgo PI      0,506      0,983      0,000
+28              São Pedro do Piauí PI      0,568      0,896      0,000
+29             São Raimundo Nonato PI       0,65      0,759      0,000
+30                        Teresina PI      0,795      0,775      0,001
+31              Vila Nova do Piauí PI      0,576      0,878      0,000
+   Dimensão.I  ISLU Classe
+1       0,804 0,534      D
+2       0,579 0,499      E
+3       0,642 0,506      D
+4       0,435 0,471      E
+5       0,800 0,554      D
+6       0,592 0,489      E
+7       0,701 0,519      D
+8       0,945 0,586      D
+9       0,605 0,703      B
+10      0,532 0,444      E
+11      0,385 0,466      E
+12      0,271 0,457      E
+13      0,732 0,515      D
+14      0,731 0,555      D
+15      0,662 0,539      D
+16      0,755 0,588      D
+17      0,258 0,447      E
+18      0,882 0,558      D
+19      0,715 0,540      D
+20      0,434 0,525      D
+21      0,879 0,555      D
+22      0,661 0,488      E
+23      0,852 0,588      D
+24      0,862 0,529      D
+25      0,683 0,546      D
+26      0,906 0,587      D
+27      0,990 0,607      C
+28      0,767 0,559      D
+29      0,601 0,519      D
+30      0,334 0,512      D
+31      0,720 0,548      D
+
+[[16]]
+                 Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1         Marcelino Vieira RN      0,723      0,973      0,000      0,905 0,659
+2                  Mossoró RN      0,776      0,767      0,005      1,000 0,652
+3                    Natal RN      0,829      0,654      0,009      1,000 0,645
+4           Nísia Floresta RN      0,732      0,677      0,000      0,757 0,563
+5              Ouro Branco RN      0,577      0,889      0,000      0,989 0,610
+6                   Paraná RN      0,709      0,963      0,000      0,808 0,630
+7                 Parelhas RN      0,756      0,907      0,000      0,792 0,630
+8               Parnamirim RN      0,834      0,898      0,000      1,000 0,700
+9             Passa e Fica RN      0,721      0,923      0,000      0,963 0,660
+10                Passagem RN      0,608      0,931      0,000      0,855 0,600
+11            Pedra Grande RN      0,688      0,759      0,000      0,468 0,503
+12         Porto do Mangue RN      0,652      0,788      0,000      0,428 0,488
+13          Riacho da Cruz RN      0,668      0,943      0,000      0,000 0,434
+14       Riacho de Santana RN       0,71      0,968      0,000      0,812 0,633
+15              Santa Cruz RN      0,698      0,699      0,000      0,246 0,443
+16       Santana do Seridó RN      0,712      0,888      0,124      0,935 0,670
+17 São Gonçalo do Amarante RN       0,76      0,861      0,000      1,000 0,667
+18      São João do Sabugi RN      0,695      0,566      0,000      0,754 0,525
+19              São Rafael RN      0,635      0,815      0,000      0,000 0,394
+20    Serra Negra do Norte RN       0,61      0,259      0,000      0,571 0,387
+21                Umarizal RN       0,73      0,631      0,000      0,825 0,567
+22                  Várzea RN      0,684      0,952      0,000      0,838 0,626
+   Classe
+1       C
+2       C
+3       C
+4       D
+5       C
+6       C
+7       C
+8       B
+9       C
+10      C
+11      D
+12      E
+13      E
+14      C
+15      E
+16      C
+17      C
+18      D
+19      E
+20      E
+21      D
+22      C
+
+[[17]]
+                Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1                 Gramado RS      0,833      1,000      0,076      1,000 0,739
+2                Gravataí RS      0,808      0,809      0,025      1,000 0,677
+3                 Guabiju RS      0,671      0,949      0,200      1,000 0,701
+4                  Guaíba RS      0,806      0,775      0,136      1,000 0,693
+5                 Ibarama RS      0,754      0,961      0,009      1,000 0,689
+6                  Ibiaçá RS      0,815      0,898      0,173      1,000 0,732
+7                 Ibirubá RS      0,774      0,880      0,000      0,596 0,587
+8                    Imbé RS      0,833      0,843      0,010      1,000 0,689
+9           Independência RS      0,783      0,887      0,030      0,876 0,660
+10               Inhacorá RS       0,65      0,970      0,000      0,842 0,620
+11        Ipiranga do Sul RS      0,852      0,895      0,278      1,000 0,767
+12                 Itaara RS      0,824      0,899      0,000      0,821 0,657
+13                Itapuca RS      0,762      0,980      0,492      1,000 0,803
+14                  Ivorá RS      0,608      0,828      0,000      0,295 0,453
+15                Jaguari RS       0,67      0,976      0,000      0,650 0,585
+16                   Jari RS      0,526      0,992      0,000      0,973 0,612
+17                   Jóia RS      0,614      0,943      0,000      1,000 0,637
+18     Júlio de Castilhos RS      0,723      0,882      0,000      0,797 0,614
+19  Lagoa dos Três Cantos RS      0,851      0,937      0,090      1,000 0,734
+20                Lajeado RS      0,843      0,973      0,003      1,000 0,720
+21              Mampituba RS      0,752      0,951      0,000      1,000 0,684
+22                Maquiné RS      0,775      0,855      0,000      1,000 0,670
+23           Mariano Moro RS      0,673      0,865      0,149      1,000 0,672
+24            Mato Leitão RS       0,82      0,906      0,000      1,000 0,697
+25          Mato Queimado RS        0,8      0,954      0,110      1,000 0,725
+26 Maximiliano de Almeida RS      0,672      0,956      0,000      1,000 0,659
+27          Minas do Leão RS      0,774      0,924      0,000      1,000 0,686
+28           Morro Reuter RS      0,818      0,887      0,108      1,000 0,716
+29                  Muçum RS       0,82      0,950      0,000      1,000 0,707
+30          Muitos Capões RS      0,777      0,956      0,181      1,000 0,734
+31           Não-Me-Toque RS      0,834      0,819      0,000      1,000 0,682
+32      Nicolau Vergueiro RS      0,641      0,934      0,000      1,000 0,644
+33          Nova Alvorada RS      0,816      0,890      0,065      1,000 0,706
+34        Nova Candelária RS      0,829      0,945      0,178      1,000 0,748
+35             Nova Hartz RS      0,774      0,935      0,000      1,000 0,688
+36        Nova Petrópolis RS      0,844      0,960      0,001      1,000 0,717
+37             Nova Prata RS      0,834      0,912      0,296      1,000 0,769
+38            Nova Ramada RS      0,644      0,954      0,000      1,000 0,649
+39       Nova Roma do Sul RS      0,817      0,908      0,481      1,000 0,803
+40        Nova Santa Rita RS      0,759      0,929      0,022      1,000 0,687
+41           Novo Cabrais RS      0,779      0,934      0,000      0,936 0,675
+42                 Osório RS      0,808      0,865      0,000      1,000 0,684
+43   Palmeira das Missões RS      0,768      0,860      0,510      1,000 0,783
+44                  Paraí RS      0,837      0,878      0,090      1,000 0,716
+   Classe
+1       B
+2       C
+3       B
+4       C
+5       C
+6       B
+7       D
+8       C
+9       C
+10      C
+11      B
+12      C
+13      A
+14      E
+15      D
+16      C
+17      C
+18      C
+19      B
+20      B
+21      C
+22      C
+23      C
+24      C
+25      B
+26      C
+27      C
+28      B
+29      B
+30      B
+31      C
+32      C
+33      B
+34      B
+35      C
+36      B
+37      B
+38      C
+39      A
+40      C
+41      C
+42      C
+43      B
+44      B
+
+[[18]]
+               Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1  São José dos Ausentes RS      0,688      0,935      0,000      1,000 0,659
+2           São Leopoldo RS      0,815      0,896      0,041      1,000 0,702
+3    São Lourenço do Sul RS      0,683      0,876      0,001      1,000 0,645
+4       São Luiz Gonzaga RS      0,788      0,873      0,000      1,000 0,679
+5     São Pedro da Serra RS      0,815      0,832      0,246      1,000 0,733
+6       São Pedro do Sul RS      0,794      0,958      0,000      0,845 0,666
+7          São Vendelino RS      0,769      0,904      0,323      1,000 0,751
+8              Sapiranga RS      0,795      0,890      0,093      1,000 0,706
+9                Sarandi RS      0,792      0,948      0,000      0,756 0,643
+10 Senador Salgado Filho RS      0,783      0,942      0,000      1,000 0,693
+11                 Sério RS      0,754      0,994      0,000      1,000 0,695
+12        Sertão Santana RS      0,765      0,883      0,000      1,000 0,673
+13  Severiano de Almeida RS      0,639      0,900      0,857      1,000 0,826
+14      Silveira Martins RS       0,76      0,883      0,000      0,703 0,606
+15            Sobradinho RS      0,802      0,846      0,269      1,000 0,737
+16                 Tabaí RS      0,788      0,939      0,000      1,000 0,694
+17              Tapejara RS       0,83      0,751      0,282      1,000 0,728
+18                Tapera RS      0,821      0,849      0,158      1,000 0,720
+19                 Tapes RS      0,784      0,928      0,067      1,000 0,705
+20               Taquara RS      0,799      0,970      0,044      1,000 0,714
+21               Taquari RS      0,811      0,870      0,089      1,000 0,706
+22        Terra de Areia RS       0,78      0,908      0,000      1,000 0,684
+23              Teutônia RS      0,821      0,960      0,246      1,000 0,764
+24       Três Cachoeiras RS        0,8      0,964      0,107      1,000 0,727
+25           Três Coroas RS      0,795      0,720      0,032      1,000 0,654
+26          Três de Maio RS       0,82      0,818      0,048      0,765 0,636
+27       Três Forquilhas RS      0,761      0,986      0,000      1,000 0,695
+28       Trindade do Sul RS      0,778      0,925      0,190      0,970 0,723
+29           Tupanciretã RS      0,726      0,890      0,032      0,654 0,593
+30             Ubiretama RS      0,788      0,996      0,000      1,000 0,706
+31             Unistalda RS      0,694      0,922      0,000      0,922 0,641
+32            Uruguaiana RS      0,806      0,810      0,095      0,762 0,639
+33           Vale do Sol RS      0,706      0,916      0,000      1,000 0,661
+34             Vale Real RS      0,814      0,897      0,560      1,000 0,817
+35        Venâncio Aires RS      0,796      0,902      0,096      1,000 0,709
+36             Vera Cruz RS      0,814      0,949      0,047      1,000 0,715
+37                Viamão RS        0,8      0,850      0,023      0,805 0,640
+38           Vila Flores RS      0,787      0,938      0,017      1,000 0,697
+39          Vila Lângaro RS      0,549      0,956      0,000      1,000 0,618
+40 Vista Alegre do Prata RS      0,638      0,960      0,056      1,000 0,661
+41             Westfália RS      0,824      0,931      0,113      1,000 0,729
+   Classe
+1       C
+2       B
+3       C
+4       C
+5       B
+6       C
+7       B
+8       B
+9       C
+10      C
+11      C
+12      C
+13      A
+14      C
+15      B
+16      C
+17      B
+18      B
+19      B
+20      B
+21      B
+22      C
+23      B
+24      B
+25      C
+26      C
+27      C
+28      B
+29      D
+30      B
+31      C
+32      C
+33      C
+34      A
+35      B
+36      B
+37      C
+38      C
+39      C
+40      C
+41      B
+
+[[19]]
+         Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU Classe
+1           Calmon SC      0,655      0,886      0,038      1,000 0,646      C
+2     Campos Novos SC      0,764      0,912      0,115      1,000 0,705      B
+3         Capinzal SC      0,824      0,864      0,000      1,000 0,689      C
+4       Catanduvas SC      0,798      0,856      0,000      1,000 0,678      C
+5          Chapecó SC      0,834      0,993      0,067      0,746 0,680      C
+6     Cocal do Sul SC      0,844      0,910      0,012      1,000 0,708      B
+7           Corupá SC      0,838      0,855      0,000      1,000 0,691      C
+8         Criciúma SC       0,85      0,933      0,019      1,000 0,717      B
+9       Cunha Porã SC      0,705      0,963      0,000      1,000 0,671      C
+10       Dona Emma SC      0,747      0,849      0,097      1,000 0,681      C
+11 Doutor Pedrinho SC      0,799      0,937      0,194      1,000 0,740      B
+12     Erval Velho SC      0,703      0,901      0,000      1,000 0,657      C
+13  Flor do Sertão SC      0,583      0,940      0,000      1,000 0,626      C
+14   Florianópolis SC      0,892      0,469      0,047      1,000 0,633      C
+15    Forquilhinha SC      0,825      0,920      0,068      1,000 0,717      B
+16       Fraiburgo SC      0,774      0,956      0,134      1,000 0,723      B
+17        Garopaba SC      0,825      0,706      0,000      1,000 0,654      C
+18          Gaspar SC      0,834      0,932      0,052      1,000 0,719      B
+19      Guaramirim SC        0,8      0,867      0,044      1,000 0,691      C
+20  Herval d'Oeste SC      0,796      0,742      0,000      1,000 0,652      C
+21         Ibicaré SC      0,636      0,943      0,000      1,000 0,644      C
+22         Ibirama SC      0,771      0,989      0,140      1,000 0,730      B
+23           Içara SC      0,792      0,877      0,012      1,000 0,684      C
+24          Ilhota SC      0,815      0,809      0,000      1,000 0,673      C
+25         Indaial SC      0,842      0,972      0,057      1,000 0,732      B
+26        Ipumirim SC       0,65      0,906      0,100      1,000 0,662      C
+27      Iraceminha SC      0,612      0,899      0,000      1,000 0,626      C
+28           Irani SC      0,729      0,909      0,000      1,000 0,667      C
+29     Irineópolis SC      0,787      0,907      0,319      1,000 0,757      B
+30             Itá SC       0,73      0,760      0,182      1,000 0,675      C
+31          Itajaí SC      0,839      0,825      0,029      1,000 0,691      C
+32      Ituporanga SC      0,822      0,914      0,144      1,000 0,731      B
+33          Jaborá SC      0,652      0,924      0,111      1,000 0,670      C
+34  Jaraguá do Sul SC      0,858      1,000      0,090      1,000 0,751      B
+35         Joaçaba SC      0,855      0,901      0,095      1,000 0,728      B
+36       Joinville SC      0,865      0,743      0,074      1,000 0,692      C
+37    José Boiteux SC      0,783      0,947      0,027      1,000 0,700      B
+38    Lacerdópolis SC      0,707      0,936      0,000      1,000 0,666      C
+39     Lebon Régis SC      0,651      0,935      0,000      1,000 0,647      C
+40   Leoberto Leal SC      0,561      0,943      0,000      1,000 0,619      C
+41  Lindóia do Sul SC      0,647      0,936      0,135      1,000 0,676      C
+42      Luiz Alves SC      0,761      0,920      0,000      1,000 0,680      C
+43         Luzerna SC      0,851      0,833      0,000      1,000 0,691      C
+44        Macieira SC      0,549      0,940      0,000      1,000 0,614      C
+
+[[20]]
+                Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1              Adamantina SP      0,826      0,990      0,200      1,000 0,762
+2                   Aguaí SP       0,77      0,959      0,000      1,000 0,692
+3          Águas da Prata SP      0,842      0,877      0,051      0,974 0,703
+4      Águas de São Pedro SP      0,897      0,873      0,001      0,468 0,598
+5                Alambari SP      0,796      0,985      0,000      0,816 0,666
+6                  Altair SP      0,778      0,905      0,039      1,000 0,691
+7             Altinópolis SP      0,776      0,919      0,078      1,000 0,702
+8      Álvaro de Carvalho SP      0,767      0,826      0,002      1,000 0,662
+9             Alvinlândia SP      0,773      0,830      0,032      1,000 0,671
+10      Américo de Campos SP      0,819      0,946      0,000      1,000 0,705
+11                  Apiaí SP      0,795      0,916      0,237      1,000 0,743
+12           Araçariguama SP      0,776      0,942      0,000      1,000 0,690
+13                Aramina SP      0,797      0,797      0,000      1,000 0,665
+14                 Arandu SP      0,777      0,783      0,000      1,000 0,655
+15             Araraquara SP      0,869      0,882      0,062      1,000 0,722
+16              Arco-Íris SP      0,731      0,958      0,093      1,000 0,700
+17                 Areias SP      0,689      0,983      0,073      1,000 0,687
+18             Areiópolis SP      0,784      0,915      0,000      1,000 0,687
+19                  Arujá SP      0,835      0,715      0,026      1,000 0,665
+20                Aspásia SP      0,723      0,829      0,096      1,000 0,669
+21                  Assis SP      0,851      0,843      0,000      0,682 0,623
+22                Atibaia SP      0,807      0,899      0,007      1,000 0,693
+23                   Avaí SP      0,798      0,964      0,000      1,000 0,703
+24                  Avaré SP      0,835      0,822      0,003      1,000 0,684
+25           Bady Bassitt SP      0,801      0,799      0,000      1,000 0,667
+26               Balbinos SP      0,766      0,821      0,000      1,000 0,660
+27                Bálsamo SP      0,803      0,905      0,085      0,719 0,648
+28                 Bariri SP      0,808      0,675      0,000      1,000 0,641
+29           Barra Bonita SP       0,85      0,883      0,116      1,000 0,727
+30        Barra do Chapéu SP      0,747      0,928      0,000      1,000 0,677
+31                Barueri SP      0,849      0,820      0,029      1,000 0,694
+32                  Bauru SP      0,857      0,839      0,015      1,000 0,697
+33              Bebedouro SP      0,831      0,839      0,000      1,000 0,686
+34               Bertioga SP      0,809      0,716      0,010      1,000 0,653
+35                  Bilac SP      0,812      0,985      0,021      1,000 0,717
+36                Bocaina SP      0,817      0,933      0,000      0,692 0,634
+37                 Bofete SP      0,791      0,939      0,000      1,000 0,695
+38                Boituva SP       0,83      0,978      0,021      1,000 0,721
+39 Bom Sucesso de Itararé SP      0,759      0,963      0,000      1,000 0,689
+40               Boraceia SP      0,826      0,926      0,000      1,000 0,703
+   Classe
+1       B
+2       C
+3       B
+4       D
+5       C
+6       C
+7       B
+8       C
+9       C
+10      B
+11      B
+12      C
+13      C
+14      C
+15      B
+16      B
+17      C
+18      C
+19      C
+20      C
+21      C
+22      C
+23      B
+24      C
+25      C
+26      C
+27      C
+28      C
+29      B
+30      C
+31      C
+32      C
+33      C
+34      C
+35      B
+36      C
+37      C
+38      B
+39      C
+40      B
+
+[[21]]
+              Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1                Fernão SP      0,788      0,994      0,054      1,000 0,718
+2               Floreal SP      0,766      0,932      0,096      0,772 0,656
+3      Flórida Paulista SP      0,798      0,801      0,099      1,000 0,688
+4                Franca SP      0,839      0,809      0,028      1,000 0,688
+5      Gabriel Monteiro SP      0,784      0,826      0,165      0,766 0,652
+6                 Gália SP      0,794      0,849      0,152      1,000 0,709
+7                 Garça SP      0,836      0,774      0,026      0,794 0,633
+8        Gastão Vidigal SP      0,773      0,966      0,021      1,000 0,699
+9              Getulina SP      0,734      0,934      0,007      1,000 0,676
+10             Guaiçara SP       0,81      0,792      0,107      1,000 0,692
+11             Guapiaçu SP      0,772      0,795      0,000      1,000 0,656
+12             Guapiara SP      0,721      0,903      0,012      1,000 0,666
+13              Guaraci SP      0,811      0,771      0,000      1,000 0,664
+14      Guarani d'Oeste SP       0,81      0,923      0,000      1,000 0,697
+15           Guararapes SP       0,81      0,913      0,092      1,000 0,716
+16        Guaratinguetá SP      0,857      0,960      0,024      0,739 0,669
+17               Guareí SP      0,778      0,917      0,154      1,000 0,720
+18              Guarujá SP      0,824      0,863      0,014      1,000 0,692
+19            Guarulhos SP      0,832      0,657      0,011      1,000 0,647
+20          Herculândia SP      0,807      0,859      0,000      0,796 0,637
+21              Iacanga SP      0,812      0,825      0,066      1,000 0,691
+22                Iacri SP      0,811      0,892      0,000      0,555 0,592
+23                Ibirá SP      0,816      0,979      0,185      0,898 0,730
+24            Ibirarema SP      0,793      0,932      0,050      1,000 0,705
+25             Ibitinga SP      0,814      0,779      0,050      1,000 0,677
+26                 Iepê SP      0,813      0,906      0,051      1,000 0,706
+27            Indiaporã SP      0,824      1,000      0,100      0,848 0,708
+28      Inúbia Paulista SP      0,793      0,940      0,042      1,000 0,705
+29              Itaberá SP      0,783      0,956      0,071      1,000 0,712
+30                 Itaí SP      0,771      0,859      0,104      1,000 0,693
+31             Itanhaém SP      0,805      0,988      0,005      1,000 0,711
+32               Itaóca SP       0,73      0,914      0,000      0,867 0,639
+33 Itapecerica da Serra SP      0,817      0,705      0,011      1,000 0,653
+34              Itapeva SP      0,794      1,000      0,030      0,692 0,648
+35  Itapirapuã Paulista SP      0,758      0,887      0,000      1,000 0,672
+36             Itápolis SP      0,792      0,858      0,000      0,444 0,554
+37               Itapuí SP      0,805      0,994      0,000      1,000 0,712
+38             Itatinga SP      0,784      0,988      0,007      1,000 0,705
+39                Itobi SP      0,771      0,860      0,000      1,000 0,670
+40                  Itu SP      0,839      0,524      0,046      1,000 0,628
+41            Ituverava SP      0,817      0,965      0,153      1,000 0,743
+42              Jacareí SP      0,839      0,562      0,005      1,000 0,627
+43               Jarinu SP      0,782      0,761      0,000      0,663 0,577
+44              Jumirim SP      0,813      0,987      0,005      1,000 0,714
+   Classe
+1       B
+2       C
+3       C
+4       C
+5       C
+6       B
+7       C
+8       C
+9       C
+10      C
+11      C
+12      C
+13      C
+14      C
+15      B
+16      C
+17      B
+18      C
+19      C
+20      C
+21      C
+22      D
+23      B
+24      B
+25      C
+26      B
+27      B
+28      B
+29      B
+30      C
+31      B
+32      C
+33      C
+34      C
+35      C
+36      D
+37      B
+38      B
+39      C
+40      C
+41      B
+42      C
+43      D
+44      B
+
+[[22]]
+             Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I  ISLU
+1       Nova Luzitânia SP      0,818      0,952      0,028      1,000 0,713
+2               Novais SP      0,781      0,985      0,045      1,000 0,712
+3       Novo Horizonte SP      0,805      0,918      0,111      1,000 0,719
+4              Olímpia SP      0,839      0,917      0,000      1,000 0,706
+5              Oriente SP      0,837      0,901      0,000      1,000 0,701
+6            Orindiúva SP      0,826      0,812      0,000      1,000 0,678
+7             Orlândia SP      0,837      0,924      0,000      1,000 0,707
+8               Osasco SP      0,841      0,910      0,006      1,000 0,706
+9         Osvaldo Cruz SP      0,802      0,817      0,042      0,614 0,595
+10            Ourinhos SP      0,843      0,946      0,063      0,733 0,669
+11            Ouroeste SP      0,832      0,968      0,029      1,000 0,721
+12            Palmital SP       0,82      0,851      0,020      1,000 0,689
+13            Panorama SP      0,803      0,909      0,000      1,000 0,692
+14        Paranapanema SP      0,782      0,940      0,071      1,000 0,708
+15           Paranapuã SP       0,81      0,872      0,000      1,000 0,686
+16            Pardinho SP      0,807      1,000      0,189      1,000 0,756
+17       Pariquera-Açu SP      0,813      0,917      0,000      0,855 0,665
+18              Parisi SP      0,803      0,900      0,016      1,000 0,693
+19 Patrocínio Paulista SP      0,809      0,843      0,082      1,000 0,697
+20           Paulicéia SP      0,795      0,760      0,000      0,217 0,483
+21         Paulistânia SP        0,8      0,940      0,010      1,000 0,700
+22          Pedra Bela SP      0,771      0,954      0,000      1,000 0,691
+23        Pedranópolis SP      0,763      0,954      0,080      1,000 0,706
+24          Pedregulho SP      0,755      0,687      0,008      1,000 0,628
+25            Pedreira SP      0,834      0,858      0,099      1,000 0,713
+26  Pedrinhas Paulista SP      0,815      0,935      0,190      0,778 0,695
+27     Pedro de Toledo SP      0,756      0,914      0,000      0,429 0,551
+28             Peruíbe SP      0,822      0,995      0,002      0,284 0,560
+29             Piacatu SP      0,788      0,989      0,165      1,000 0,741
+30        Pilar do Sul SP      0,755      0,847      0,025      1,000 0,668
+31     Pindamonhangaba SP      0,839      0,585      0,007      1,000 0,633
+32           Pindorama SP      0,798      0,851      0,000      1,000 0,677
+33             Piquete SP      0,828      0,799      0,000      0,741 0,618
+34              Piraju SP      0,829      0,906      0,098      1,000 0,722
+35             Pirajuí SP      0,822      0,885      0,057      1,000 0,705
+36             Pirangi SP      0,797      0,934      0,365      0,725 0,716
+37         Pirapozinho SP      0,827      0,850      0,000      0,609 0,600
+38        Pitangueiras SP      0,801      0,837      0,000      1,000 0,675
+39            Planalto SP      0,801      0,886      0,000      1,000 0,686
+40                 Poá SP      0,836      0,710      0,039      1,000 0,667
+41              Pongaí SP      0,797      0,843      0,135      1,000 0,705
+42            Populina SP      0,778      0,849      0,049      0,530 0,577
+43           Porangaba SP      0,714      0,848      0,000      1,000 0,649
+44         Porto Feliz SP      0,823      0,694      0,010      1,000 0,653
+   Classe
+1       B
+2       B
+3       B
+4       B
+5       B
+6       C
+7       B
+8       B
+9       D
+10      C
+11      B
+12      C
+13      C
+14      B
+15      C
+16      B
+17      C
+18      C
+19      C
+20      E
+21      B
+22      C
+23      B
+24      C
+25      B
+26      C
+27      D
+28      D
+29      B
+30      C
+31      C
+32      C
+33      C
+34      B
+35      B
+36      B
+37      C
+38      C
+39      C
+40      C
+41      B
+42      D
+43      C
+44      C
+
+[[23]]
+                  Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I
+1  Santo Antônio da Alegria SP      0,789      0,938      0,224      0,767
+2            Santo Expedito SP       0,81      0,931      0,070      0,716
+3     Santópolis do Aguapeí SP      0,806      0,964      0,000      1,000
+4                    Santos SP      0,887      0,973      0,012      1,000
+5      São Bento do Sapucaí SP      0,785      0,816      0,003      1,000
+6     São Bernardo do Campo SP      0,862      0,828      0,013      1,000
+7                São Carlos SP      0,862      0,870      0,022      1,000
+8     São João da Boa Vista SP      0,856      0,843      0,115      0,948
+9      São Joaquim da Barra SP      0,826      0,599      0,009      1,000
+10     São José do Barreiro SP      0,776      0,982      0,000      0,838
+11    São José do Rio Preto SP      0,856      0,803      0,008      1,000
+12      São José dos Campos SP      0,863      0,730      0,032      1,000
+13    São Lourenço da Serra SP      0,807      0,739      0,024      1,000
+14                São Paulo SP      0,862      0,772      0,012      1,000
+15                São Roque SP      0,836      0,900      0,001      0,737
+16                São Simão SP      0,805      0,878      0,017      0,587
+17              São Vicente SP      0,822      0,574      0,016      1,000
+18   Sebastianópolis do Sul SP      0,787      0,876      0,016      1,000
+19              Sertãozinho SP      0,831      0,834      0,018      1,000
+20              Sete Barras SP      0,742      0,739      0,000      1,000
+21                Severínia SP      0,765      0,772      0,000      0,646
+22                  Socorro SP      0,754      0,817      0,007      1,000
+23                 Sorocaba SP      0,857      0,947      0,018      1,000
+24             Sud Mennucci SP       0,78      0,775      0,009      1,000
+25              Suzanápolis SP      0,687      0,892      0,031      1,000
+26                   Suzano SP      0,834      0,608      0,003      1,000
+27                  Tabapuã SP      0,812      0,992      0,000      1,000
+28                   Taguaí SP      0,794      0,933      0,000      1,000
+29                   Taiaçu SP      0,767      0,973      0,169      1,000
+30                   Tambaú SP       0,81      0,899      0,115      1,000
+31             Taquaritinga SP      0,812      0,930      0,000      1,000
+32               Taquarivaí SP      0,733      0,913      0,198      1,000
+33                   Tarumã SP      0,825      0,884      0,078      0,669
+34                  Taubaté SP      0,858      0,779      0,020      1,000
+35                   Tejupá SP      0,765      0,926      0,250      0,327
+36          Teodoro Sampaio SP      0,762      0,733      0,010      0,478
+37               Terra Roxa SP      0,809      0,943      0,000      1,000
+38                    Tietê SP      0,843      0,700      0,048      1,000
+39           Torre de Pedra SP      0,798      0,901      0,000      0,796
+40                 Tremembé SP      0,848      0,951      0,000      1,000
+41          Três Fronteiras SP      0,825      0,914      0,004      1,000
+42                  Turiúba SP      0,813      0,951      0,000      1,000
+43                Turmalina SP      0,813      0,944      0,000      0,936
+44                   Urânia SP      0,774      0,868      0,000      1,000
+    ISLU Classe
+1  0,692      C
+2  0,652      C
+3  0,705      B
+4  0,737      B
+5  0,666      C
+6  0,696      C
+7  0,708      B
+8  0,709      B
+9  0,632      C
+10 0,663      C
+11 0,688      C
+12 0,679      C
+13 0,660      C
+14 0,683      C
+15 0,643      C
+16 0,598      D
+17 0,627      C
+18 0,683      C
+19 0,688      C
+20 0,633      C
+21 0,570      D
+22 0,656      C
+23 0,722      B
+24 0,656      C
+25 0,656      C
+26 0,635      C
+27 0,713      B
+28 0,694      C
+29 0,732      B
+30 0,718      B
+31 0,700      B
+32 0,713      B
+33 0,638      C
+34 0,685      C
+35 0,590      D
+36 0,526      D
+37 0,701      B
+38 0,669      C
+39 0,643      C
+40 0,716      B
+41 0,701      B
+42 0,705      B
+43 0,689      C
+44 0,673      C
+
+[[24]]
+                   Município UF Dimensão.E Dimensão.S Dimensão.R Dimensão.I
+1              Aguiarnópolis TO      0,757      0,802      0,000      0,857
+2                      Almas TO      0,682      0,728      0,000      0,528
+3                     Ananás TO      0,763      0,837      0,000      0,000
+4                     Angico TO      0,676      0,896      0,000      0,933
+5                   Araguaçu TO      0,673      0,797      0,000      1,000
+6                   Araguanã TO      0,624      0,880      0,000      0,000
+7                    Arraias TO      0,663      0,864      0,000      1,000
+8             Augustinópolis TO      0,716      0,846      0,000      0,000
+9        Aurora do Tocantins TO       0,69      0,793      0,000      0,363
+10              Babaçulândia TO      0,623      0,909      0,000      1,000
+11    Bom Jesus do Tocantins TO       0,68      0,882      0,000      0,772
+12        Brejinho de Nazaré TO      0,722      0,866      0,001      1,000
+13       Cariri do Tocantins TO      0,631      0,811      0,000      0,608
+14                 Combinado TO      0,744      0,796      0,000      0,833
+15    Conceição do Tocantins TO      0,622      0,969      0,000      0,847
+16              Darcinópolis TO      0,604      0,849      0,000      0,750
+17                Dianópolis TO      0,762      0,918      0,000      0,529
+18             Figueirópolis TO       0,71      0,774      0,018      0,548
+19      Fortaleza do Tabocão TO      0,704      0,892      0,000      0,312
+20                  Goiatins TO       0,58      0,974      0,000      0,702
+21                    Guaraí TO      0,791      0,562      0,000      0,230
+22                    Gurupi TO      0,823      0,970      0,053      1,000
+23                  Ipueiras TO       0,61      0,828      0,001      0,000
+24                   Itacajá TO      0,516      0,716      0,000      0,468
+25        Lagoa do Tocantins TO       0,62      0,840      0,000      1,000
+26 Marianópolis do Tocantins TO      0,607      0,843      0,000      0,678
+27     Miracema do Tocantins TO      0,733      0,747      0,000      0,839
+28               Nova Olinda TO      0,651      0,823      0,000      0,518
+29                    Palmas TO      0,836      0,748      0,015      1,000
+30                    Paranã TO      0,582      0,985      0,002      0,000
+31                Pau D'Arco TO      0,653      0,868      0,000      0,898
+32                     Peixe TO       0,64      0,790      0,133      0,571
+33                   Piraquê TO      0,552      0,870      0,000      0,296
+34            Porto Nacional TO      0,776      0,729      0,006      0,604
+35             Recursolândia TO      0,508      0,889      0,000      0,000
+36          Rio da Conceição TO      0,699      0,921      0,000      0,472
+37  Santa Maria do Tocantins TO      0,623      0,930      0,000      0,000
+38   Santa Rita do Tocantins TO      0,664      0,874      0,018      0,903
+39 São Valério da Natividade TO      0,637      0,569      0,011      0,339
+40              Silvanópolis TO      0,712      0,946      0,000      0,906
+41                  Sucupira TO      0,658      0,805      0,000      0,765
+42       Taipas do Tocantins TO      0,659      0,874      0,000      0,398
+43                   Talismã TO      0,618      0,806      0,000      0,536
+    ISLU Classe
+1  0,621      C
+2  0,507      D
+3  0,442      E
+4  0,632      C
+5  0,623      C
+6  0,405      E
+7  0,635      C
+8  0,428      E
+9  0,488      E
+10 0,632      C
+11 0,595      D
+12 0,655      C
+13 0,526      D
+14 0,610      C
+15 0,611      C
+16 0,557      D
+17 0,576      D
+18 0,535      D
+19 0,503      D
+20 0,566      D
+21 0,440      E
+22 0,724      B
+23 0,389      E
+24 0,436      E
+25 0,615      C
+26 0,541      D
+27 0,597      D
+28 0,516      D
+29 0,670      C
+30 0,415      E
+31 0,610      C
+32 0,546      D
+33 0,444      E
+34 0,556      D
+35 0,368      E
+36 0,543      D
+37 0,416      E
+38 0,620      C
+39 0,417      E
+40 0,649      C
+41 0,568      D
+42 0,503      D
+43 0,505      D</code></pre>
+</div>
+</div>
+<p>Observe que o output desse código foi uma lista de datasets, nosso trabalho agora é preparar esses dados para serem analisados. Primeiro vamos mudar o formato dos dados, iremos transformar esse conjunto de listas em um dataset, onde a 1° coluna conterá todos os datasets, e cada linha vai conter um dos data.frames</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">datasets =</span>. )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 24 × 1
+   datasets     
+   &lt;list&gt;       
+ 1 &lt;df [39 × 8]&gt;
+ 2 &lt;df [26 × 8]&gt;
+ 3 &lt;df [0 × 8]&gt; 
+ 4 &lt;df [1 × 8]&gt; 
+ 5 &lt;df [26 × 8]&gt;
+ 6 &lt;df [0 × 8]&gt; 
+ 7 &lt;df [28 × 8]&gt;
+ 8 &lt;df [17 × 8]&gt;
+ 9 &lt;df [44 × 8]&gt;
+10 &lt;df [44 × 8]&gt;
+# ℹ 14 more rows</code></pre>
+</div>
+</div>
+<p>Nosso objetivo agora é transformar esse dataset que contém datasets dentro das celulas da coluna datasets em um conjuto de dados comum.Vamos criar uma nova estrutura de dados, transformando os dados para texto e finalmente “desenrola” os elementos da lista para formar um novo conjunto de dados.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dataset <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">datasets =</span>. ) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Transforma todas as variáveis para character, para evitar erro de empilhamento de variáveis com tipos diferentes</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">datasets =</span> <span class="fu">map</span>(datasets, <span class="sc">~</span>.x <span class="sc">%&gt;%</span> <span class="fu">mutate_all</span>(as.character))) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#desenlistando os dados para um formato tabular</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(datasets)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 756 × 8
+   Município      UF    Dimensão.E Dimensão.S Dimensão.R Dimensão.I ISLU  Classe
+   &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; 
+ 1 Abaré          BA    0,623      0,896      0,000      0,537      0,527 D     
+ 2 Alagoinhas     BA    0,693      0,678      0,001      1,000      0,604 C     
+ 3 Amargosa       BA    0,676      0,740      0,000      0,898      0,589 D     
+ 4 Andorinha      BA    0,537      0,928      0,000      0,541      0,506 D     
+ 5 Aporá          BA    0,595      0,824      0,000      0,710      0,540 D     
+ 6 Baianópolis    BA    0,49       0,919      0,000      0,622      0,506 D     
+ 7 Barra          BA    0,545      0,847      0,000      0,612      0,506 D     
+ 8 Barra do Choça BA    0,573      0,833      0,001      0,592      0,508 D     
+ 9 Barra do Mend… BA    0,609      0,854      0,000      0,941      0,602 C     
+10 Barra do Rocha BA    0,585      0,848      0,000      0,000      0,385 E     
+# ℹ 746 more rows</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="caso-reddit---extraindo-dados-de-textos" class="level3">
+<h3 class="anchored" data-anchor-id="caso-reddit---extraindo-dados-de-textos">Caso reddit - Extraindo dados de textos</h3>
+<p>Um outro problema que podemos ter é extrair dados de textos corridos. Alguns sites implementam dificuldades para coletar alguns tipos de dados, afim de evitar que robos coletem dados, como no caso da mudança de politica do reddit para evitar que os dados sejam coletados para treinar modelos de inteligência artificial. Outro exemplo foi quando o twitter mudou a regras da API, diminuindo significativamente o número de tweets coletados.</p>
+<p>Uma estratégia para driblar esses problemas é copiar os dados de texto e usar as marcações de linguagem natural para proceder as análises.</p>
+<p>Baixe os dados utilizando o código abaixo</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dados <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/BaruqueRodrigues/web_scraping/main/txt_reddit.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 104 Columns: 1
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): X1
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 104 × 1
+   X1                                                                           
+   &lt;chr&gt;                                                                        
+ 1 154                                                                          
+ 2 Sunday Morning Political Cartoon Thread (self.politics)                      
+ 3 submitted 1 dia ago * by optimalg[M] - announcement                          
+ 4 77 comentárioscompartilharsalvarocultargive awarddenunciarcrosspost          
+ 5 28.7k                                                                        
+ 6 Clarence Thomas says American citizens are seemingly more interested in thei…
+ 7 submitted 7 hours ago by Sensate602                                          
+ 8 4654 comentárioscompartilharsalvarocultargive awarddenunciarcrosspost        
+ 9 13.6k                                                                        
+10 Democrats more likely to vote in midterms after abortion ruling: poll (thehi…
+# ℹ 94 more rows</code></pre>
+</div>
+</div>
+<p>Olhar pro dataset acima e não ver ele estruturado em colunas, e cada linha da primeira coluna não ter nenhum sentido pode ser aterrador, mas após superar o primeiro espanto e olhar com cuidado como os dados estão dispostos podemos ver que existe sim uma estrutura de como os dados estão apresentados.</p>
+<p>A cada 4 linhas a mesma estrutura se repete, onde na primeira linha temos um valor numérico, a saber o número de votos que o tópico teve no reddit, na segunda linha o título do tópico, na terceira linha a descrição do tópico e na quarta as interações com o tópico. A partir disso podemos começar a estruturar nossos dados</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dados <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     <span class="co">#criar uma coluna que repita os termos votos, titulo, descricao e iteracao 26x</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">index =</span> <span class="fu">rep</span>( </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">c</span>(<span class="st">"votos"</span>, <span class="st">"titulo"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"descricao"</span>, <span class="st">"interacao"</span>), </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                     <span class="dv">26</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>     )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 104 × 2
+   X1                                                                      index
+   &lt;chr&gt;                                                                   &lt;chr&gt;
+ 1 154                                                                     votos
+ 2 Sunday Morning Political Cartoon Thread (self.politics)                 titu…
+ 3 submitted 1 dia ago * by optimalg[M] - announcement                     desc…
+ 4 77 comentárioscompartilharsalvarocultargive awarddenunciarcrosspost     inte…
+ 5 28.7k                                                                   votos
+ 6 Clarence Thomas says American citizens are seemingly more interested i… titu…
+ 7 submitted 7 hours ago by Sensate602                                     desc…
+ 8 4654 comentárioscompartilharsalvarocultargive awarddenunciarcrosspost   inte…
+ 9 13.6k                                                                   votos
+10 Democrats more likely to vote in midterms after abortion ruling: poll … titu…
+# ℹ 94 more rows</code></pre>
+</div>
+</div>
+<p>Agora podemos transformar esse dataset com algum nível de estrutura em algo mais tabular, para isso vamos criar colunas a partir da coluna index, e essas colunas serão preenchidas com os valores da coluna X1, para isso vamos utilizar a função pivot_wider,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dados <span class="sc">%&gt;%</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>     <span class="co">#criar uma coluna que repita os termos votos, titulo, descricao e iteracao 26x</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">index =</span> <span class="fu">rep</span>( </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">c</span>(<span class="st">"votos"</span>, <span class="st">"titulo"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"descricao"</span>, <span class="st">"interacao"</span>), </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                     <span class="dv">26</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>     ) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#criando novas colunas com base nos valores da coluna index</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> index, <span class="co"># os titulos das novas colunas virão da var index</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> X1 <span class="co"># os valores serão preenchidos com a coluna X1</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_longer</span>(<span class="fu">everything</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 26 × 4
+   votos titulo                                              descricao interacao
+   &lt;chr&gt; &lt;chr&gt;                                               &lt;chr&gt;     &lt;chr&gt;    
+ 1 154   Sunday Morning Political Cartoon Thread (self.poli… submitte… 77 comen…
+ 2 28.7k Clarence Thomas says American citizens are seeming… submitte… 4654 com…
+ 3 13.6k Democrats more likely to vote in midterms after ab… submitte… 1218 com…
+ 4 26.7k Ilhan Omar Says Plan to Fix Supreme Court Must Inc… submitte… 1361 com…
+ 5 7271  Progressives Turn Up the Heat on Biden to Do Liter… submitte… 1302 com…
+ 6 6112  Alexandria Ocasio-Cortez calls for supreme court j… submitte… 304 come…
+ 7 2970  Petition to impeach Clarence Thomas passes 300,000… submitte… 183 come…
+ 8 9715  Let’s call the overturning of Roe v Wade what it i… submitte… 1038 com…
+ 9 5997  States With Abortion Bans to Mothers: Drop Dead — … submitte… 235 come…
+10 3181  Majority of people disagree with Supreme Court’s d… submitte… 212 come…
+# ℹ 16 more rows</code></pre>
+</div>
+</div>
+<p>Agora que temos algumas variáveis estruturadas podemos implementar transformações no dataset, criando algumas variáveis importantes para que ele fique pronto para a etapa de analise.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dados_organizados <span class="ot">&lt;-</span> dados <span class="sc">%&gt;%</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>     <span class="co">#criar uma coluna que repita os termos votos, titulo, descricao e iteracao 26x</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">index =</span> <span class="fu">rep</span>( </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">c</span>(<span class="st">"votos"</span>, <span class="st">"titulo"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"descricao"</span>, <span class="st">"interacao"</span>), </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                     <span class="dv">26</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>     ) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#criando novas colunas com base nos valores da coluna index</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> index, <span class="co"># os titulos das novas colunas virão da var index</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> X1 <span class="co"># os valores serão preenchidos com a coluna X1</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_longer</span>(<span class="fu">everything</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Criando novas colunas para enriquecer nossas análises</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#busca um padrão de regez que contenham www.</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">fonte_noticias =</span> <span class="fu">str_extract</span>(titulo ,<span class="st">"</span><span class="sc">\\</span><span class="st">(([</span><span class="sc">\\</span><span class="st">w</span><span class="sc">\\</span><span class="st">.]+)</span><span class="sc">\\</span><span class="st">)"</span>),</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#busca um padrão que contenha 1 digito um espaço e a palavra comentarios</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_comentarios =</span> <span class="fu">str_extract</span>(interacao, <span class="st">"[</span><span class="sc">\\</span><span class="st">d?]+</span><span class="sc">\\</span><span class="st">s+comentários"</span>),</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#busca um padrão que contenha a palavra submitted e um digito</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">tempo_de_vida =</span> <span class="fu">str_extract</span>(descricao, <span class="st">"submitted+</span><span class="sc">\\</span><span class="st">s+[</span><span class="sc">\\</span><span class="st">d?]+</span><span class="sc">\\</span><span class="st">s+[</span><span class="sc">\\</span><span class="st">w]+"</span>),</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">#busca o padrão  comece com ago by, seguida de uma ou mais letras, números</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">autor =</span> <span class="fu">str_extract</span>(descricao, <span class="st">"ago</span><span class="sc">\\</span><span class="st">sby</span><span class="sc">\\</span><span class="st">s[</span><span class="sc">\\</span><span class="st">w]+"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reorganizando as colunas do dataset</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(votos, titulo, interacao, n_comentarios, tempo_de_vida, autor, fonte_noticias) </span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>dados_organizados</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 26 × 8
+   votos titulo       interacao n_comentarios tempo_de_vida autor fonte_noticias
+   &lt;chr&gt; &lt;chr&gt;        &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;         
+ 1 154   Sunday Morn… 77 comen… 77 comentári… submitted 1 … &lt;NA&gt;  (self.politic…
+ 2 28.7k Clarence Th… 4654 com… 4654 comentá… submitted 7 … ago … (businessinsi…
+ 3 13.6k Democrats m… 1218 com… 1218 comentá… submitted 8 … ago … (thehill.com) 
+ 4 26.7k Ilhan Omar … 1361 com… 1361 comentá… submitted 9 … ago … (commondreams…
+ 5 7271  Progressive… 1302 com… 1302 comentá… submitted 7 … ago … (motherjones.…
+ 6 6112  Alexandria … 304 come… 304 comentár… submitted 6 … ago … (theguardian.…
+ 7 2970  Petition to… 183 come… 183 comentár… submitted 3 … ago … (newsweek.com)
+ 8 9715  Let’s call … 1038 com… 1038 comentá… submitted 8 … ago … (theguardian.…
+ 9 5997  States With… 235 come… 235 comentár… submitted 8 … ago … (motherjones.…
+10 3181  Majority of… 212 come… 212 comentár… submitted 5 … ago … (news4jax.com)
+# ℹ 16 more rows
+# ℹ 1 more variable: descricao &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Dando uma ultima polida</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dados_organizados <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(<span class="sc">-</span>descricao, <span class="sc">-</span>interacao) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_comentarios =</span> <span class="fu">as.numeric</span>(<span class="fu">str_extract</span>(n_comentarios, <span class="st">"[</span><span class="sc">\\</span><span class="st">d?]"</span>)),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">tempo_de_vida =</span> <span class="fu">str_remove</span>(tempo_de_vida, <span class="st">"submitted "</span>),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">autor =</span> <span class="fu">str_remove</span>(autor, <span class="st">"ago by "</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 26 × 6
+   votos titulo                 n_comentarios tempo_de_vida autor fonte_noticias
+   &lt;chr&gt; &lt;chr&gt;                          &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;         
+ 1 154   Sunday Morning Politi…             7 1 dia         &lt;NA&gt;  (self.politic…
+ 2 28.7k Clarence Thomas says …             4 7 hours       Sens… (businessinsi…
+ 3 13.6k Democrats more likely…             1 8 hours       Crot… (thehill.com) 
+ 4 26.7k Ilhan Omar Says Plan …             1 9 hours       more… (commondreams…
+ 5 7271  Progressives Turn Up …             1 7 hours       Stuf… (motherjones.…
+ 6 6112  Alexandria Ocasio-Cor…             3 6 hours       Grou… (theguardian.…
+ 7 2970  Petition to impeach C…             1 3 hours       Arpi… (newsweek.com)
+ 8 9715  Let’s call the overtu…             1 8 hours       misa… (theguardian.…
+ 9 5997  States With Abortion …             2 8 hours       Pict… (motherjones.…
+10 3181  Majority of people di…             2 5 hours       jorm… (news4jax.com)
+# ℹ 16 more rows</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

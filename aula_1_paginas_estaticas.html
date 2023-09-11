@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>aula_1_paginas_estaticas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="aula_1_paginas_estaticas_files/libs/clipboard/clipboard.min.js"></script>
+<script src="aula_1_paginas_estaticas_files/libs/quarto-html/quarto.js"></script>
+<script src="aula_1_paginas_estaticas_files/libs/quarto-html/popper.min.js"></script>
+<script src="aula_1_paginas_estaticas_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="aula_1_paginas_estaticas_files/libs/quarto-html/anchor.min.js"></script>
+<link href="aula_1_paginas_estaticas_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="aula_1_paginas_estaticas_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="aula_1_paginas_estaticas_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="aula_1_paginas_estaticas_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="aula_1_paginas_estaticas_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">aula_1_paginas_estaticas</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="extraindo-dados-de-páginas-estáticas" class="level2">
+<h2 class="anchored" data-anchor-id="extraindo-dados-de-páginas-estáticas">Extraindo Dados de Páginas Estáticas</h2>
+<p>Páginas estáticas são páginas que possuem conteúdo que não muda dinamicamente com o tempo ou em resposta a interações do usuário. Páginas estáticas são aquelas cujo conteúdo é o mesmo sempre que são acessadas, a menos que sejam manualmente atualizadas pelo proprietário do site.</p>
+<p>Neste contexto, “estáticas” se refere ao fato de que o conteúdo da página não é gerado dinamicamente a partir de uma fonte de dados em tempo real, como um banco de dados ou um serviço que fornece informações atualizadas constantemente.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Raspando Dados de Páginas Estáticas</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Pacotes ---------------------------------------------------------</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rvest) <span class="co"># auxílio para raspagens de dados</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="extraindo-dados-já-tabulados" class="level3">
+<h3 class="anchored" data-anchor-id="extraindo-dados-já-tabulados">Extraindo Dados Já tabulados</h3>
+<p>Em alguns casos nossos dados a serem raspados já estão estruturados em formato tabular, em casos como esse nosso trabalho é muito menor, pois só precisamos importar essa tabela para o ambiente do R</p>
+<p>Imagine que temos o seguinte problema, precisamos uma fonte que disponibilize os dados de população dos paises ao redor do globo, e encontramos esses dados na página do <a href="#0">wikipedia</a>, onde a existe uma tabela com os dados já sistematizados, todavia devido aos 192 casos a coleta manual está descartada, como coletamos esses dados?</p>
+<p>De maneira muito simples:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Indicamos a url que contém a tabela que deverá ser lida</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://pt.wikipedia.org/wiki/Lista_de_pa%C3%ADses_por_popula%C3%A7%C3%A3o"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>url <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># função que executa a leitura do conteudo html ou xml da URL</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">html_table</span>() <span class="co"># função que extrai as tabelas da url em formato tibble</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+# A tibble: 250 × 6
+   ``    Posição `País (ou território dependente)` `Estimativa da ONU`  Data
+   &lt;lgl&gt; &lt;chr&gt;   &lt;chr&gt;                             &lt;chr&gt;               &lt;int&gt;
+ 1 NA    1       Índia                             1 429 921 746        2023
+ 2 NA    2       China                             1 426 391 281        2023
+ 3 NA    3       Estados Unidos                    339 987 103          2023
+ 4 NA    4       Indonésia                         277 184 719          2023
+ 5 NA    5       Paquistão                         240 215 932          2023
+ 6 NA    6       Nigéria                           223 899 057          2023
+ 7 NA    7       Brasil                            203 062 512          2022
+ 8 NA    8       Bangladesh                        172 452 382          2023
+ 9 NA    9       Rússia                            148 221 749          2023
+10 NA    10      México                            134 127 189          2023
+# ℹ 240 more rows
+# ℹ 1 more variable: `Estimativa Oficial` &lt;chr&gt;
+
+[[2]]
+# A tibble: 17 × 22
+   `vdeListas de países`   `vdeListas de países`   ``    ``    ``    ``    ``   
+   &lt;chr&gt;                   &lt;chr&gt;                   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+ 1 Critérios geográficos   "Área\nCapital\nContin… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 2 Critérios demográficos  "Esperança de vida\nFe… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 3 Critérios econômicos    "CompetitividadeCarvão… Carv… "Exp… Cons… "Aut… Elet…
+ 4 Carvão                  "Exportação\nImportaçã… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 5 Consumo                 "Automóveis\nper capit… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 6 Eletricidade            "Consumo\nProdução\nRe… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 7 Gás natural             "Consumo\nExportação\n… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 8 Internet de banda larga "Usuários\nAssinaturas" &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+ 9 Petróleo                "Consumo\nExportação\n… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+10 Produção econômica      "Alumínio\nAntimônio\n… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+11 Produto interno bruto   "Nominal\nper capita\n… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+12 Transportes             "Aeroportos\nHeliporto… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+13 Trabalho                "Horas médias trabalha… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+14 Critérios sociais       "Alfabetização\nAvalia… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+15 Critérios militares     "Armas de fogo per cap… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+16 Critérios ambientais    "Bem-estar sustentável… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+17 Outros critérios        "Linguística\nEtimolog… &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; &lt;NA&gt; 
+# ℹ 15 more variables: `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;,
+#   `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;,
+#   `` &lt;chr&gt;, `` &lt;chr&gt;, `` &lt;chr&gt;
+
+[[3]]
+# A tibble: 10 × 2
+   X1                      X2                                                   
+   &lt;chr&gt;                   &lt;chr&gt;                                                
+ 1 Carvão                  "Exportação\nImportação\nProdução\nReservas"         
+ 2 Consumo                 "Automóveis\nper capita\nCelulares\nInteligentes\nBe…
+ 3 Eletricidade            "Consumo\nProdução\nRenovável"                       
+ 4 Gás natural             "Consumo\nExportação\nImportação\nProdução\nReservas"
+ 5 Internet de banda larga "Usuários\nAssinaturas"                              
+ 6 Petróleo                "Consumo\nExportação\nImportação\nProdução\nReservas"
+ 7 Produção econômica      "Alumínio\nAntimônio\nBauxita\nBismuto\nChumbo\nCobr…
+ 8 Produto interno bruto   "Nominal\nper capita\nPPC\nper capita\nCrescimento"  
+ 9 Transportes             "Aeroportos\nHeliportos\nMalha ferroviária\nTráfego …
+10 Trabalho                "Horas médias trabalhadas\nProdutividade laboral\nSa…</code></pre>
+</div>
+</div>
+<p>O nosso código acima já coletou as tabelas disponibilizadas no link, todavia só nos interessa a 1 tabela. Para selecionar apenas a tabela alvo e não trazer todas as que estão contidas na página é muito simples:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://pt.wikipedia.org/wiki/Lista_de_pa%C3%ADses_por_popula%C3%A7%C3%A3o"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>url <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># função que executa a leitura do conteudo html ou xml da URL</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">html_table</span>() <span class="sc">|&gt;</span> <span class="co"># função que extrai as tabelas da url em formato tibble</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="dv">1</span>) <span class="co"># função que seleciona o 1° elemento da lista </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 250 × 6
+   ``    Posição `País (ou território dependente)` `Estimativa da ONU`  Data
+   &lt;lgl&gt; &lt;chr&gt;   &lt;chr&gt;                             &lt;chr&gt;               &lt;int&gt;
+ 1 NA    1       Índia                             1 429 921 746        2023
+ 2 NA    2       China                             1 426 391 281        2023
+ 3 NA    3       Estados Unidos                    339 987 103          2023
+ 4 NA    4       Indonésia                         277 184 719          2023
+ 5 NA    5       Paquistão                         240 215 932          2023
+ 6 NA    6       Nigéria                           223 899 057          2023
+ 7 NA    7       Brasil                            203 062 512          2022
+ 8 NA    8       Bangladesh                        172 452 382          2023
+ 9 NA    9       Rússia                            148 221 749          2023
+10 NA    10      México                            134 127 189          2023
+# ℹ 240 more rows
+# ℹ 1 more variable: `Estimativa Oficial` &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Digamos que temos um outro problema, em que precisamos saber a chance que um time tem de vencer o outro no campeonato brasileiro, sabemos que o site <a href="https://chancedegol.com.br/br23.htm">chance de gol</a> disponibiliza essas informações, entretanto como fazemos para coletar esses dados?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="st">"https://chancedegol.com.br/br23.htm"</span> <span class="sc">%&gt;%</span> <span class="co">#link que será raspado</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">read_html</span>() <span class="sc">%&gt;%</span> <span class="co">#lendo o dados em formato html</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">html_table</span>() <span class="sc">%&gt;%</span>  <span class="co"># lendo apenas as tabelas da página</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="dv">8</span>) <span class="co">#selecionando apenas as tabelas com as probabilidades</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 218 × 7
+   X1         X2                  X3    X4            X5             X6    X7   
+   &lt;chr&gt;      &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;
+ 1 Data       Mandante            ""    Visitante     Vitória doMan… Empa… Vitó…
+ 2 15/04/2023 Botafogo            "2x1" São Paulo     36.9 %         27.9… 35.2…
+ 3 15/04/2023 Palmeiras           "2x1" Cuiabá        74.0 %         18.6… 7.4 %
+ 4 15/04/2023 Red Bull Bragantino "2x1" Bahia         56.7 %         23.7… 19.6…
+ 5 15/04/2023 Atlético MG         "1x2" Vasco         55.1 %         25.9… 19.0…
+ 6 15/04/2023 Athletico PR        "2x0" Goiás         61.1 %         22.7… 16.2…
+ 7 15/04/2023 Fortaleza           "1x1" Internacional 44.9 %         25.2… 30.0…
+ 8 15/04/2023 América MG          "0x3" Fluminense    31.0 %         25.5… 43.5…
+ 9 16/04/2023 Flamengo            "3x0" Coritiba      73.0 %         18.8… 8.2 %
+10 16/04/2023 Corinthians         "2x1" Cruzeiro      56.7 %         26.4… 16.8…
+# ℹ 208 more rows</code></pre>
+</div>
+</div>
+<p>Em alguns casos os dados ficam estruturados de maneira incorreta e precisamos fazer a correção manualmente</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Manipulação dos Dados</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="st">"https://chancedegol.com.br/br23.htm"</span> <span class="sc">|&gt;</span> <span class="co"># url que será raspada</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># lendo os dados em formato html</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  rvest<span class="sc">::</span><span class="fu">html_table</span>() <span class="sc">|&gt;</span> <span class="co"># lendo as tabelas das páginas</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="dv">2</span>) <span class="sc">|&gt;</span> <span class="co"># selecionando a tabela 2</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">64</span><span class="sc">:</span><span class="dv">281</span>) <span class="sc">|&gt;</span> <span class="co"># selecionando as linhas que contém as informações desejadas</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(X1<span class="sc">:</span>X6) <span class="sc">|&gt;</span> <span class="co"># selecionando as colunas com informações válidas</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">row_to_names</span>(<span class="at">row_number =</span> <span class="dv">1</span>) <span class="co"># corrigindo o nome das colunas</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 217 × 6
+   Data       Mandante            ``    Visitante    `Vitória doMandante` Empate
+   &lt;chr&gt;      &lt;chr&gt;               &lt;chr&gt; &lt;chr&gt;        &lt;chr&gt;                &lt;chr&gt; 
+ 1 15/04/2023 Botafogo            2x1   São Paulo    36.9 %               27.9 %
+ 2 15/04/2023 Palmeiras           2x1   Cuiabá       74.0 %               18.6 %
+ 3 15/04/2023 Red Bull Bragantino 2x1   Bahia        56.7 %               23.7 %
+ 4 15/04/2023 Atlético MG         1x2   Vasco        55.1 %               25.9 %
+ 5 15/04/2023 Athletico PR        2x0   Goiás        61.1 %               22.7 %
+ 6 15/04/2023 Fortaleza           1x1   Internacion… 44.9 %               25.2 %
+ 7 15/04/2023 América MG          0x3   Fluminense   31.0 %               25.5 %
+ 8 16/04/2023 Flamengo            3x0   Coritiba     73.0 %               18.8 %
+ 9 16/04/2023 Corinthians         2x1   Cruzeiro     56.7 %               26.4 %
+10 16/04/2023 Grêmio              1x0   Santos       59.5 %               24.1 %
+# ℹ 207 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="lidando-com-dados-não-estruturados---caso-amazon" class="level3">
+<h3 class="anchored" data-anchor-id="lidando-com-dados-não-estruturados---caso-amazon">Lidando com dados não estruturados - Caso Amazon</h3>
+<p>Muitas vezes precisamos raspar dados que estão em um formato não estruturado, ou seja, eles estão dispostos de maneira que um humano consegue compreender a informação, todavia não estão estruturados de maneira que um software possa analisar os dados, nesse caso precisamos estruturar os dados. O nosso caso em questão será o site da amazon, mais especificamente as <a href="https://www.amazon.com.br/s?k=anilhas+olimpica&amp;dc&amp;__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=3G7N1VMRIZIDT&amp;sprefix=anilhas+olimipica%2Caps%2C166&amp;ref=a9_sc_1">anilhas olimpicas</a> vendidas na amazon.</p>
+<p>Nosso primeiro passo é armazenar a url é um objeto, já que precisaremos coletar as informações dela multiplas vezes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://www.amazon.com.br/s?k=anilhas+olimpica&amp;dc&amp;__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=3G7N1VMRIZIDT&amp;sprefix=anilhas+olimipica%2Caps%2C166&amp;ref=a9_sc_1"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Em seguida iremos identificar em qual objeto html está disponibilizada a nossa informação, nesse caso no nodo <code>.s-line-clamp-4</code>, que é identificado ao inspecionar o elemento.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>url <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># le o código html da página</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">".s-line-clamp-4"</span>) <span class="sc">|&gt;</span> <span class="co">#busca o nodo identificado</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text</span>() <span class="co">#transforma o resultado em texto</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 10kg D1fitness  "                                                      
+ [2] "Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 5kg D1fitness  "                                                       
+ [3] "Anilha Olímpica Bumper Hi Temp Lpo 5kg - Borracha vulcanizada D1fitness  "                                                           
+ [4] "Anilha Olímpica Vollo 2.5kg  "                                                                                                       
+ [5] "Anilha Olímpica Poliuretano com 12 Faces de 1,25kg Wellness - WK015  "                                                               
+ [6] "Kit 10 Anilhas Olímpica Bumper Cross Training de Borracha Hi Temp 5kg D1fitness  "                                                   
+ [7] "Anilha Olímpica Borracha Amarelo New Bumper Plate 15kg Wellness - WK008  "                                                           
+ [8] "Anilha Olímpica Rubber com 5 furos  "                                                                                                
+ [9] "Lock Jaw Cross Par Presilha Barra Olimpica 2 50mm - Odin Fit  "                                                                      
+[10] "Anilha Olímpica Poliuretano com 12 Faces de 2,50kg Wellness - WK017  "                                                               
+[11] "Anilha Olímpica Borracha New Bumper Plate 10kg Wellness - Multilaser, WK007, Preto/Verde  "                                          
+[12] "Anilha Sport Luxo Furação Olímpica 51mm - 1 Kg  "                                                                                    
+[13] "Anilha Olímpica Rubber com 5 furos de 2,50kg Wellness - WK013  "                                                                     
+[14] "Par Presilhas Barra Olimpica Lpo Musculação Lock Jawhold 3.0 D1fitness  "                                                            
+[15] "Anilha Olímpica Bumper D1Fitness - Anilhas Cross Hi Temp All Black 5kg - Treino Funcional - Cross Training - Crumb Plates Olímpica  "
+[16] "Anilha, Rae  "                                                                                                                       
+[17] "Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 15kg D1fitness  "                                                      
+[18] "Kit Anilhas Olímpica Bumper Cross Training de Borracha Hi Temp par 5kg + Par 10kg D1fitness  "                                       
+[19] "Kit Anilha Olímpica 60kg Bumper Hi Temp de Borracha - Cross Training Cross Fit Lpo - D1fitness  "                                    
+[20] "Par de Presilhas Olímpica Lock Jaw Wellness - WK032  "                                                                               
+[21] "Barra Fixa e Paralela Para Musculação - Exercicio  "                                                                                 
+[22] "Barra Fixa Parede - Crossfit- Pull-up - Para Treinar Em Casa  "                                                                      
+[23] "KIT FITNESS 40KG COM 3 BARRAS E CORDA  "                                                                                             
+[24] "BARRA OLIMPICA CROMADA - 2,00M  "                                                                                                    
+[25] "Kit Barra Olímpica Masculina 220cm 20kg + Par de Anilhas 5kg + Par de Presilhas D1fitness  "                                         
+[26] "Presilha para Barra Olímpica Lock Jaw Par 50mm Odin Fit  "                                                                           
+[27] "Anilha Olímpica 10KG Competition Plate Ultrawod - Unidade  "                                                                         
+[28] "Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 10kg D1fitness  "                                                          
+[29] "Anilha Sport Luxo Furação Olímpica 51mm - 4 Kg  "                                                                                    
+[30] "Anilha Kikos 5Kg Emborrachada Olímpica  "                                                                                            
+[31] "Anilha Olímpica Vollo 10kg  "                                                                                                        
+[32] "Anilha Olímpica Vollo 5kg  "                                                                                                         
+[33] "Anilha Olímpica Vollo 15kg  "                                                                                                        
+[34] "Suporte de parede para Anilhas Olímpicas-3 Pinos (Capacidade Máxima 140kg)  "                                                        
+[35] "Kit 20kg Anilhas + 1 Barra 120cm Com Presilhas  "                                                                                    
+[36] "Barra Oca Body Pump 1,20m Para Musculação + Presilhas  "                                                                             
+[37] "Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 15kg D1fitness  "                                                          
+[38] "kit Barra Olímpica Feminina + Anilha 5kg + Presilha  "                                                                               
+[39] "Placas de peso Fitness First Urethane Grip 2,5-45 lbs.  "                                                                            
+[40] "Kit 20kg Anilhas+2 Barras 40cm Com Rosca+1 Barra 120cm+Corda  "                                                                      
+[41] "Anilha Olimpica Preto e Branco 15kg - Roppe  "                                                                                       
+[42] "Haltere Olímpico em Aço Cromado para Musculação Pelegrin Pel-20bob 50cm  "                                                           
+[43] "Kit Barra Olímpica Masculina 220cm 20kg + Par de Anilhas 10kg + Par de Presilhas D1fitness  "                                        
+[44] "Anilha Olímpica Vollo 20kg  "                                                                                                        
+[45] "Presilha Barra Olimpica Lock Jaw - Par - Cor Azul - Cross Training Lpo  "                                                            
+[46] "KIT 4 Suportes de Anilhas Expositor de Academia 200 Kg Capacidade Ferro  "                                                           
+[47] "Anilha Olímpica com pegada anatômica - 20 kg - Slade Fitness  "                                                                      
+[48] "Anilha Olímpica Borracha New Bumper Plate 10kg verde Wellness  "                                                                     
+[49] "BARRA OLIMPICA CROMADA - 2,00M  "                                                                                                    
+[50] "Suporte de parede para Anilhas Olímpicas – 4 Pinos (Capacidade Máxima 180kg)  "                                                      
+[51] "Barra Paralela Chão Par 45CM - Treino Musculação Funcional Calistenia  "                                                             
+[52] "Presilha Barra Olimpica Lock Jaw - Par - Cor Verde - Cross Training Lpo  "                                                           
+[53] "Kit 20kg Anilhas + 1 Barra 120cm Com Presilhas  "                                                                                    
+[54] "Banco Supino 3 Posições Reto, Inclinado E Declinado - Preto  "                                                                       
+[55] "Kit 30Kg Anilhas + 2 Barras de 40cm Rosca + 1 Barra 1,20m  "                                                                         
+[56] "Kit Fitness 20Kg + 2 Barras 40cm Rosca + 1 Barra 120cm Presilhas + Extensor Elástico  "                                              
+[57] "Kit Anilhas E Barras Ajustáveis 20kg - Home Gym Fitness  "                                                                           
+[58] "Kit Fitness 40Kg + 2 Barras 40cm Rosca + 1 Barra 120cm Presilhas + Extensor Elástico  "                                              
+[59] "Kit 20kg Anilhas+2 Barras 40cm Com Rosca+1 Barra 120cm+Corda  "                                                                      
+[60] "Kit Fitness 20kg em Anilhas + 2 Barras 40cm Com Rosca  "                                                                             </code></pre>
+</div>
+</div>
+<p>Em seguida fazemos o mesmo procedimento para identificar o preço</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>url <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># lê o código html da página</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">".a-offscreen"</span>) <span class="sc">|&gt;</span> <span class="co">#lê o nodo especifico</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text</span>() <span class="co">#transforma o nodo em texto</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "R$&nbsp;750,00"   "R$&nbsp;360,00"   "R$&nbsp;196,00"   "R$&nbsp;173,28"   "R$&nbsp;74,00"   
+ [6] "R$&nbsp;1.750,00" "R$&nbsp;473,90"   "R$&nbsp;169,00"   "R$&nbsp;39,90"    "R$&nbsp;45,90"   
+[11] "R$&nbsp;129,00"   "R$&nbsp;330,90"   "R$&nbsp;499,00"   "R$&nbsp;15,10"    "R$&nbsp;140,54"  
+[16] "R$&nbsp;71,00"    "R$&nbsp;210,00"   "R$&nbsp;354,39"   "R$&nbsp;1.150,00" "R$&nbsp;1.199,00"
+[21] "R$&nbsp;2.090,00" "R$&nbsp;56,69"    "R$&nbsp;137,90"   "R$&nbsp;157,90"   "R$&nbsp;689,00"  
+[26] "R$&nbsp;286,70"   "R$&nbsp;1.818,75" "R$&nbsp;45,90"    "R$&nbsp;875,00"   "R$&nbsp;390,00"  
+[31] "R$&nbsp;60,40"    "R$&nbsp;277,02"   "R$&nbsp;676,87"   "R$&nbsp;346,57"   "R$&nbsp;1.016,31"
+[36] "R$&nbsp;450,00"   "R$&nbsp;286,70"   "R$&nbsp;69,00"    "R$&nbsp;520,00"   "R$&nbsp;1.836,20"
+[41] "R$&nbsp;118,87"   "R$&nbsp;389,00"   "R$&nbsp;769,16"   "R$&nbsp;435,68"   "R$&nbsp;461,24"  
+[46] "R$&nbsp;2.064,96" "R$&nbsp;1.196,69" "R$&nbsp;38,90"    "R$&nbsp;138,46"   "R$&nbsp;421,00"  
+[51] "R$&nbsp;523,90"   "R$&nbsp;729,00"   "R$&nbsp;560,00"   "R$&nbsp;129,91"   "R$&nbsp;38,90"   
+[56] "R$&nbsp;749,00"   "R$&nbsp;489,00"   "R$&nbsp;369,00"   "R$&nbsp;259,00"   "R$&nbsp;569,00"  
+[61] "R$&nbsp;649,00"   "R$&nbsp;389,00"   "R$&nbsp;317,60"  </code></pre>
+</div>
+</div>
+<p>Podemos também capturar todo o anúncio e partir dele coletar a nossa informação desejada.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Capturando todo o anúncio  </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>url <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># Lê a página</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">'.s-card-border'</span> ) <span class="sc">|&gt;</span> <span class="co"># lê o nodo em especifico</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_text</span>() <span class="co">#transforma em texto</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 10kg D1fitness  R$&nbsp;750,00R$750,00  em até 10x de R$&nbsp;75,00 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+ [2] "Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 5kg D1fitness  4,6 de 5 estrelas 3  R$&nbsp;360,00R$360,00  em até 7x de R$&nbsp;51,48 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                
+ [3] "Anilha Olímpica Poliuretano com 12 Faces de 1,25kg Wellness - WK015  5,0 de 5 estrelas 1  R$&nbsp;74,00R$74,00  Receba até terça-feira, 10 de outFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+ [4] "Anilha Olímpica Bumper Hi Temp Lpo 5kg - Borracha vulcanizada D1fitness  R$&nbsp;196,00R$196,00  em até 3x de R$&nbsp;65,34 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+ [5] "Anilha Olímpica Borracha New Bumper Plate 10kg Wellness - Multilaser, WK007, Preto/Verde  5,0 de 5 estrelas 2  R$&nbsp;330,90R$330,90 De: R$&nbsp;499,00R$499,00  em até 6x de R$&nbsp;55,15 sem jurosReceba terça-feira, 26 de set - sexta-feira, 29 de setR$&nbsp;21,46 de frete"                                                                                                                                                                                                                                                                                                                                                                                    
+ [6] "Anilha Olímpica Vollo 2.5kg  5,0 de 5 estrelas 1  R$&nbsp;173,28R$173,28  em até 3x de R$&nbsp;57,76 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+ [7] "Kit 10 Anilhas Olímpica Bumper Cross Training de Borracha Hi Temp 5kg D1fitness  R$&nbsp;1.750,00R$1.750,00  em até 10x de R$&nbsp;175,00 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                    
+ [8] "Anilha Olímpica Poliuretano com 12 Faces de 2,50kg Wellness - WK017  R$&nbsp;129,00R$129,00  em até 2x de R$&nbsp;64,50 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+ [9] "Anilha Olímpica Rubber com 5 furos  5,0 de 5 estrelas 1  R$&nbsp;169,00R$169,00  em até 3x de R$&nbsp;56,34 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+[10] "Lock Jaw Cross Par Presilha Barra Olimpica 2 50mm - Odin Fit  5,0 de 5 estrelas 7  R$&nbsp;39,90R$39,90 De: R$&nbsp;45,90R$45,90  Receba quinta-feira, 21 de set - segunda-feira, 25 de setR$&nbsp;23,20 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                
+[11] "Anilha Olímpica Bumper D1Fitness - Anilhas Cross Hi Temp All Black 5kg - Treino Funcional - Cross Training - Crumb Plates Olímpica  5,0 de 5 estrelas 6  R$&nbsp;210,00R$210,00  em até 4x de R$&nbsp;52,50 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                         
+[12] "Anilha Olímpica Borracha Amarelo New Bumper Plate 15kg Wellness - WK008  R$&nbsp;473,90R$473,90  em até 9x de R$&nbsp;52,70 sem jurosReceba terça-feira, 26 de set - sexta-feira, 29 de setR$&nbsp;21,46 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                
+[13] "Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 15kg D1fitness  5,0 de 5 estrelas 1  R$&nbsp;1.150,00R$1.150,00  em até 10x de R$&nbsp;115,00 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                  
+[14] "Anilha Olímpica Rubber com 5 furos de 2,50kg Wellness - WK013  R$&nbsp;140,54R$140,54  em até 2x de R$&nbsp;70,27 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+[15] "Anilha Sport Luxo Furação Olímpica 51mm - 1 Kg  R$&nbsp;15,10R$15,10  Receba sexta-feira, 6 de out - sexta-feira, 13 de outR$&nbsp;66,02 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+[16] "Kit Anilha Olímpica 60kg Bumper Hi Temp de Borracha - Cross Training Cross Fit Lpo - D1fitness  R$&nbsp;2.090,00R$2.090,00  em até 10x de R$&nbsp;209,00 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                     
+[17] "Par Presilhas Barra Olimpica Lpo Musculação Lock Jawhold 3.0 D1fitness  5,0 de 5 estrelas 2  R$&nbsp;71,00R$71,00  Receba até quarta-feira, 20 de setR$&nbsp;22,48 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[18] "Anilha, Rae  R$&nbsp;354,39R$354,39  em até 7x de R$&nbsp;50,67 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[19] "Kit Anilhas Olímpica Bumper Cross Training de Borracha Hi Temp par 5kg + Par 10kg D1fitness  R$&nbsp;1.199,00R$1.199,00  em até 10x de R$&nbsp;119,90 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                        
+[20] "Kit Barra Olímpica Masculina 220cm 20kg + Par de Anilhas 5kg + Par de Presilhas D1fitness  5,0 de 5 estrelas 2  R$&nbsp;1.818,75R$1.818,75  em até 10x de R$&nbsp;181,92 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                     
+[21] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Barra Fixa e Paralela Para Musculação - Exercicio  3,3 de 5 estrelas 4  R$&nbsp;137,90R$137,90  em até 2x de R$&nbsp;68,95 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                 
+[22] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Barra Fixa Parede - Crossfit- Pull-up - Para Treinar Em Casa  4,1 de 5 estrelas 24  Mais de 50 compras no mês passadoR$&nbsp;157,90R$157,90  em até 3x de R$&nbsp;52,64 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                    
+[23] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  BARRA OLIMPICA CROMADA - 1,80M  R$&nbsp;689,00R$689,00  em até 10x de R$&nbsp;68,90 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;40,42 de frete"                                                                                                                                                                                                                                                                                                                             
+[24] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit 20kg Anilhas + 1 Barra 120cm Com Presilhas  4,7 de 5 estrelas 60  Mais de 50 compras no mês passadoR$&nbsp;286,70R$286,70  em até 5x de R$&nbsp;57,34 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;61,00 de frete"                                                                                                                                                                                                                                                       
+[25] "Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 10kg D1fitness  R$&nbsp;390,00R$390,00  em até 7x de R$&nbsp;55,74 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[26] "Anilha Kikos 5Kg Emborrachada Olímpica  5,0 de 5 estrelas 1  R$&nbsp;277,02R$277,02  em até 5x de R$&nbsp;55,42 sem jurosReceba segunda-feira, 25 de set - quinta-feira, 28 de setR$&nbsp;45,00 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[27] "Anilha Olímpica Vollo 10kg  R$&nbsp;676,87R$676,87  em até 10x de R$&nbsp;67,75 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[28] "Anilha Sport Luxo Furação Olímpica 51mm - 4 Kg  R$&nbsp;60,40R$60,40  Receba sexta-feira, 6 de out - segunda-feira, 16 de outR$&nbsp;99,00 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[29] "Anilha Olímpica Vollo 5kg  R$&nbsp;346,57R$346,57  em até 6x de R$&nbsp;57,77 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+[30] "Anilha Olímpica 10KG Competition Plate Ultrawod - Unidade  R$&nbsp;875,00R$875,00  em até 10x de R$&nbsp;87,50 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setR$&nbsp;52,01 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+[31] "Suporte de parede para Anilhas Olímpicas-3 Pinos (Capacidade Máxima 140kg)  R$&nbsp;450,00R$450,00  em até 9x de R$&nbsp;50,00 sem jurosReceba quarta-feira, 25 de out - segunda-feira, 30 de outR$&nbsp;110,31 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[32] "Par de Presilhas Olímpica Lock Jaw Wellness - WK032  3,8 de 5 estrelas 4  R$&nbsp;56,69R$56,69  Receba até terça-feira, 19 de setFrete GRÁTISMais opções de compraR$&nbsp;36,90(3 ofertas de novos)"                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[33] "Anilha Olímpica Vollo 15kg  R$&nbsp;1.016,31R$1.016,31  em até 10x de R$&nbsp;101,64 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+[34] "+1 cor/estampaPresilha para Barra Olímpica Lock Jaw Par 50mm Odin Fit  4,5 de 5 estrelas 5  R$&nbsp;45,90R$45,90  Receba até quarta-feira, 20 de setR$&nbsp;22,90 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+[35] "kit Barra Olímpica Feminina + Anilha 5kg + Presilha  5,0 de 5 estrelas 1  R$&nbsp;1.836,20R$1.836,20  em até 10x de R$&nbsp;183,62 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                           
+[36] "Kit 20kg Anilhas + 1 Barra 120cm Com Presilhas  4,7 de 5 estrelas 60  Mais de 50 compras no mês passadoR$&nbsp;286,70R$286,70  em até 5x de R$&nbsp;57,34 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;61,00 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                
+[37] "Barra Oca Body Pump 1,20m Para Musculação + Presilhas  4,5 de 5 estrelas 55  R$&nbsp;69,00R$69,00  Receba até quarta-feira, 20 de setR$&nbsp;21,30 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[38] "Haltere Olímpico em Aço Cromado para Musculação Pelegrin Pel-20bob 50cm  5,0 de 5 estrelas 1  R$&nbsp;435,68R$435,68 De: R$&nbsp;461,24R$461,24  em até 8x de R$&nbsp;54,46 sem jurosReceba sexta-feira, 29 de set - sexta-feira, 6 de outR$&nbsp;79,00 de fretePequeno Negócio  Pequeno NegócioCompre produtos de marcas de pequenos negócios vendidos na loja da Amazon. Saiba mais sobre o compromisso da Amazon para impulsionar o sucesso dos pequenos negócios que vendem na Amazon.com.br. Saiba mais "                                                                                                                                                         
+[39] "Kit Barra Olímpica Masculina 220cm 20kg + Par de Anilhas 10kg + Par de Presilhas D1fitness  4,5 de 5 estrelas 2  R$&nbsp;2.064,96R$2.064,96  em até 10x de R$&nbsp;206,55 sem jurosReceba quinta-feira, 21 de set - segunda-feira, 25 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                    
+[40] "Anilha Olímpica Vollo 20kg  R$&nbsp;1.196,69R$1.196,69  em até 10x de R$&nbsp;119,75 sem juros Receba até terça-feira, 19 de setOpção de frete GRÁTIS disponível"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+[41] "Anilha Olímpica com pegada anatômica - 20 kg - Slade Fitness  R$&nbsp;421,00R$421,00  em até 8x de R$&nbsp;52,66 sem jurosReceba segunda-feira, 25 de set - segunda-feira, 2 de outR$&nbsp;214,55 de fretePequeno Negócio  Pequeno NegócioCompre produtos de marcas de pequenos negócios vendidos na loja da Amazon. Saiba mais sobre o compromisso da Amazon para impulsionar o sucesso dos pequenos negócios que vendem na Amazon.com.br. Saiba mais "                                                                                                                                                                                                          
+[42] "Anilha Olimpica Preto e Branco 15kg - Roppe  R$&nbsp;769,16R$769,16  em até 10x de R$&nbsp;76,97 sem jurosReceba sexta-feira, 15 de set - segunda-feira, 18 de setR$&nbsp;74,00 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[43] "Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 15kg D1fitness  R$&nbsp;520,00R$520,00  em até 10x de R$&nbsp;52,00 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[44] "BARRA OLIMPICA CROMADA - 2,00M  R$&nbsp;729,00R$729,00  em até 10x de R$&nbsp;72,90 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;40,52 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+[45] "Kit 20kg Anilhas+2 Barras 40cm Com Rosca+1 Barra 120cm+Corda  4,7 de 5 estrelas 142  R$&nbsp;389,00R$389,00  em até 7x de R$&nbsp;55,58 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;61,00 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                  
+[46] "Placas de peso Fitness First Urethane Grip 2,5-45 lbs.  R$&nbsp;118,87R$118,87  em até 2x de R$&nbsp;59,44 sem jurosFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+[47] "Presilha Barra Olimpica Lock Jaw - Par - Cor Azul - Cross Training Lpo  R$&nbsp;38,90R$38,90  Receba quinta-feira, 21 de set - segunda-feira, 25 de setR$&nbsp;22,00 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+[48] "Anilha Olímpica Borracha New Bumper Plate 10kg verde Wellness  R$&nbsp;523,90R$523,90  em até 10x de R$&nbsp;52,39 sem jurosReceba sexta-feira, 29 de set - terça-feira, 3 de outR$&nbsp;89,41 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+[49] "Anilha Kikos 7.5Kg Emborrachada Olímpica  R$&nbsp;415,32R$415,32  em até 8x de R$&nbsp;51,95 sem jurosReceba segunda-feira, 25 de set - quinta-feira, 28 de setR$&nbsp;52,49 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+[50] "KIT 4 Suportes de Anilhas Expositor de Academia 200 Kg Capacidade Ferro  5,0 de 5 estrelas 1  R$&nbsp;138,46R$138,46  em até 2x de R$&nbsp;69,23 sem jurosReceba até quarta-feira, 20 de setFrete GRÁTIS"                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+[51] "Suporte de parede para Anilhas Olímpicas – 4 Pinos (Capacidade Máxima 180kg)  R$&nbsp;560,00R$560,00  em até 10x de R$&nbsp;56,00 sem jurosReceba sexta-feira, 20 de out - segunda-feira, 30 de outR$&nbsp;129,98 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[52] "Anilha Olímpica Borracha New Bumper Plate 15kg amarela Wellness  R$&nbsp;786,90R$786,90  em até 10x de R$&nbsp;78,69 sem jurosReceba sexta-feira, 29 de set - terça-feira, 3 de outR$&nbsp;115,55 de frete"                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[53] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Banco Supino 3 Posições Reto, Inclinado E Declinado - Preto  4,2 de 5 estrelas 10  R$&nbsp;749,00R$749,00  em até 10x de R$&nbsp;74,90 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;61,00 de frete"                                                                                                                                                                                                                                                                          
+[54] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit 30Kg Anilhas + 2 Barras de 40cm Rosca + 1 Barra 1,20m  4,6 de 5 estrelas 3  R$&nbsp;489,00R$489,00  em até 9x de R$&nbsp;54,36 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;58,80 de frete"                                                                                                                                                                                                                                                                              
+[55] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit Fitness 20Kg + 2 Barras 40cm Rosca + 1 Barra 120cm Presilhas + Extensor Elástico  5,0 de 5 estrelas 9  R$&nbsp;369,00R$369,00  em até 7x de R$&nbsp;52,74 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;61,40 de fretePequeno Negócio  Pequeno NegócioCompre produtos de marcas de pequenos negócios vendidos na loja da Amazon. Saiba mais sobre o compromisso da Amazon para impulsionar o sucesso dos pequenos negócios que vendem na Amazon.com.br. Saiba mais "      
+[56] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit Anilhas E Barras Ajustáveis 20kg - Home Gym Fitness  4,6 de 5 estrelas 16  Mais de 100 compras no mês passadoR$&nbsp;259,00R$259,00  em até 5x de R$&nbsp;51,80 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;75,00 de fretePequeno Negócio  Pequeno NegócioCompre produtos de marcas de pequenos negócios vendidos na loja da Amazon. Saiba mais sobre o compromisso da Amazon para impulsionar o sucesso dos pequenos negócios que vendem na Amazon.com.br. Saiba mais "
+[57] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit Fitness 40Kg + 2 Barras 40cm Rosca + 1 Barra 120cm Presilhas + Extensor Elástico  4,6 de 5 estrelas 13  R$&nbsp;569,00R$569,00  em até 10x de R$&nbsp;56,90 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;89,40 de fretePequeno Negócio  Pequeno NegócioCompre produtos de marcas de pequenos negócios vendidos na loja da Amazon. Saiba mais sobre o compromisso da Amazon para impulsionar o sucesso dos pequenos negócios que vendem na Amazon.com.br. Saiba mais "    
+[58] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  KIT FITNESS 40KG COM 3 BARRAS E CORDA  4,8 de 5 estrelas 63  R$&nbsp;649,00R$649,00  em até 10x de R$&nbsp;64,90 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;89,20 de frete"                                                                                                                                                                                                                                                                                                
+[59] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit 20kg Anilhas+2 Barras 40cm Com Rosca+1 Barra 120cm+Corda  4,7 de 5 estrelas 142  R$&nbsp;389,00R$389,00  em até 7x de R$&nbsp;55,58 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;61,00 de frete"                                                                                                                                                                                                                                                                         
+[60] "PatrocinadoPatrocinado Você está vendo este anúncio com base na relevância do produto para sua consulta de pesquisa.Deixe uma avaliação sobre o anúncio  Kit Fitness 20kg em Anilhas + 2 Barras 40cm Com Rosca  4,8 de 5 estrelas 6  R$&nbsp;317,60R$317,60  em até 6x de R$&nbsp;52,95 sem jurosReceba segunda-feira, 25 de set - sexta-feira, 29 de setR$&nbsp;62,80 de frete"                                                                                                                                                                                                                                                                                  </code></pre>
+</div>
+</div>
+<p>Em alguns casos a melhor estratégia é estruturar a informação em formato de dataset a partir de um campo mais ou menos estruturado em linguagem natural. Nesse caso vamos usar o nodo que contém toda a informação do anuncio e vamos estruturar o dataset a partir dele.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>anuncio_amazon <span class="ot">&lt;-</span> url<span class="sc">|&gt;</span> <span class="co"># url que será raspada</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_html</span>() <span class="sc">|&gt;</span> <span class="co"># lendo o html da página</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">'.s-card-border'</span> )  <span class="co">#lendo as informações do anuncio</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># criamos uma coluna com o texto do título do anuncio</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">nome =</span> anuncio_amazon <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">".s-line-clamp-4"</span>) <span class="sc">|&gt;</span> <span class="fu">html_text</span>(<span class="at">trim =</span> T),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># criamos uma coluna com o valor do anuncio</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">valor =</span> anuncio_amazon <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">".a-offscreen"</span>) <span class="sc">|&gt;</span> <span class="fu">html_text</span>(<span class="at">trim =</span> T)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 2
+   nome                                                                    valor
+   &lt;chr&gt;                                                                   &lt;chr&gt;
+ 1 Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 10kg D1f… R$&nbsp;7…
+ 2 Par Anilha Olímpica Bumper Cross Training de Borracha Hi Temp 5kg D1fi… R$&nbsp;3…
+ 3 Anilha Olímpica Poliuretano com 12 Faces de 1,25kg Wellness - WK015     R$&nbsp;7…
+ 4 Anilha Olímpica Bumper Hi Temp Lpo 5kg - Borracha vulcanizada D1fitness R$&nbsp;1…
+ 5 Anilha Olímpica Borracha New Bumper Plate 10kg Wellness - Multilaser, … R$&nbsp;3…
+ 6 Anilha Olímpica Vollo 2.5kg                                             R$&nbsp;1…
+ 7 Kit 10 Anilhas Olímpica Bumper Cross Training de Borracha Hi Temp 5kg … R$&nbsp;1…
+ 8 Anilha Olímpica Borracha Amarelo New Bumper Plate 15kg Wellness - WK008 R$&nbsp;4…
+ 9 Anilha Olímpica Poliuretano com 12 Faces de 2,50kg Wellness - WK017     R$&nbsp;1…
+10 Lock Jaw Cross Par Presilha Barra Olimpica 2 50mm - Odin Fit            R$&nbsp;3…
+# ℹ 50 more rows</code></pre>
+</div>
+</div>
+<p>Muito bom, conseguimos raspar os dados dos anuncios da amazon, entretanto só raspamos a primeira página, como fazemos para raspar todas as páginas disponíveis?</p>
+<p>Muito simples, criamos uma pequena função para raspar página a página do site, todavia precisamos criar o link que contem as multiplas páginas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Capturamos a url</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://www.amazon.com.br/s?k=whey+protein&amp;page=2&amp;__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;qid=1656355614&amp;ref=sr_pg_2"</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#quebramos a url em etapas estaticas</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>url_pt_1 <span class="ot">&lt;-</span> <span class="st">"https://www.amazon.com.br/s?k=whey+protein&amp;page="</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>url_pt_2 <span class="ot">&lt;-</span> <span class="st">"&amp;__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&amp;crid=Q1X7R7FNY9U7&amp;qid=1656354306&amp;sprefix=whey+prote%2Caps%2C173&amp;ref=sr_pg_"</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># e em itens que sofrem variação</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>url_iteracao <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#concatenamos em uma série de strings</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(url_pt_1, url_iteracao, url_pt_2, url_iteracao)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Com o link criado, criamos agora uma função que extrai a informação desejada, ou seja os preços e o nome dos produtos da amazon.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pega_info_anuncio<span class="ot">&lt;-</span> <span class="cf">function</span>(url_alvo){</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Primeiro criamos o objeto que vai receber o nodo que contém todas as informações dos produtos</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  anuncio_amazon <span class="ot">&lt;-</span> url_alvo <span class="sc">|&gt;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_html</span>() <span class="sc">|&gt;</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">html_nodes</span>(<span class="st">'.s-card-border'</span> ) </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Na segunda parte trasnformamos isso em um dataset</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  anuncios_amazon_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">nome =</span> anuncio_amazon <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">".s-line-clamp-4"</span>) <span class="sc">|&gt;</span> <span class="fu">html_text</span>(<span class="at">trim =</span> T),</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">valor =</span> anuncio_amazon <span class="sc">|&gt;</span> <span class="fu">html_node</span>(<span class="st">".a-offscreen"</span>) <span class="sc">|&gt;</span> <span class="fu">html_text</span>(<span class="at">trim =</span> T)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Agora fazemos a iteração, aplicando essa função a cada uma das páginas da amazon</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">map_dfr</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  url,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  pega_info_anuncio</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 240 × 2
+   nome                                                                    valor
+   &lt;chr&gt;                                                                   &lt;chr&gt;
+ 1 Whey Concentrado 100% Whey Protein 3VS Nutrition - 900g (Pistache)      R$&nbsp;1…
+ 2 Whey Protein Concentrado 1kg - Chocolate Belga - Importado - Soldiers … R$&nbsp;8…
+ 3 Mega Whey Protein 900g - Iridium Labs Sabor:Chocolate                   R$&nbsp;6…
+ 4 Whey Protein 3W 1kg - SABORES (MORANGO)                                 R$&nbsp;5…
+ 5 Nutri Whey Protein 907g Integralmedica - Baunilha - 907g                R$&nbsp;5…
+ 6 100% Whey - 900G Baunilha - Max Titanium, Max Titanium                  R$&nbsp;1…
+ 7 Nutri Whey Protein Morango - Pouch 907g                                 R$&nbsp;5…
+ 8 100% Whey - 900G Chocolate - Max Titanium, Max Titanium                 R$&nbsp;1…
+ 9 Top Whey 3W Chocolate, Max Titanium, 900g                               R$&nbsp;1…
+10 100% Pure Whey, Probiótica, Baunilha, 900 G                             R$&nbsp;9…
+# ℹ 230 more rows</code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
