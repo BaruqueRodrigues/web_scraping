@@ -1,0 +1,83 @@
+---
+title: "aula_3_webdrivers"
+format: html
+editor: visual
+---
+
+## Webscraping envolvendo Webdrivers
+
+```{r, warning=FALSE}
+library(tidyverse)
+library(RSelenium)
+library(rv)
+```
+
+```{r, eval=FALSE}
+#Configurando o webdriver
+rs_driver_object <- RSelenium::rsDriver(
+  browser = "firefox", # navegador que será utilizado como webdriver
+  chromever = NULL, # Manter como NULL já que não usaremos o chrome
+  port = netstat::free_port(), #buscar uma porta já aberta
+  verbose = FALSE
+    )
+
+# Abrir o webdriver
+remDr <- rs_driver_object$client
+
+# Iniciar a Navegação Remota
+remDr$open()
+```
+
+Após a execução do código esse navegador será aberto. Fique tranquilo, você iniciou sua rota na extração de dados via remote drivers. O passo seguinte é a navegação.
+
+![](aula_3_web_drivers_files/imagens/rem_dr_1_tela_inicial.png)
+
+Como navegar? O primeiro passo é indicar o site que vamos explorar, vamos acessar o site do [sigaa da UNB](remDr$navigate("https://sigaa.unb.br/sigaa/public/turmas/listar.jsf")), já que é um exemplo que não pode ter as informações raspadas seja por página estáticas, já que as informações precisam de uma iteração entre humano e servidor para serem geradas.
+
+Diferente do ambiente de funções comuns do R, onde armazenamos funções em objetos, ou pipeamos uma serie de funções, utilizando o webdriver do `RSelenium`, nos primeiro chamamos o objeto `remDr` que aqui coordena o nosso Remote Driver, em seguida utilizamos o \$ para indicar qual comando desejamos enviar para o driver.
+
+```{r, eval=FALSE}
+remDr$navigate("https://sigaa.unb.br/sigaa/public/turmas/listar.jsf")
+```
+
+![](aula_3_web_drivers_files/imagens/rem_dr_2_tela_site.png)
+
+Nosso objetivo aqui é pegar as informações das disciplinas disponibilizadas nesse site, para tal precisamos indicar o nivel de ensino e a unidade.
+
+```{r, eval = FALSE}
+remDr$findElement(using = "xpath", value = '//*[@id="formTurma:inputNivel"]')$clickElement()
+```
+
+![](aula_3_web_drivers_files/imagens/rem_dr_3_seleciona_campus.png)
+
+Após selecionar qual input será selecionado nós devemos passar o comando para o remote driver clicar no input referente a graduação
+
+```{r, eval = FALSE}
+remDr$findElement(using = "xpath", value = '//*[@id="formTurma:inputNivel"]/option[3]')$clickElement()
+```
+
+![](aula_3_web_drivers_files/imagens/rem_dr_4_seleciona_graduacao.png)
+
+Em seguida selecionar a unidade de ensino
+
+```{r, eval = FALSE}
+remDr$findElement(using = "xpath", value = '//*[@id="formTurma:inputDepto"]')$clickElement()
+```
+
+![](aula_3_web_drivers_files/imagens/rem_dr_5_seleciona_unidade.png)
+
+E selecionar o campus
+
+```{r, eval = FALSE}
+remDr$findElement(using = "xpath", value = '//*[@id="formTurma:inputDepto"]/option[3]')$clickElement()
+```
+
+![](aula_3_web_drivers_files/imagens/rem_dr_6_seleciona_campus.png)
+
+Por fim, enviamos o formulário
+
+```{r, eval = FALSE}
+remDr$findElement(using = "xpath", value = '//*[@id="formTurma"]/table/tfoot/tr/td/input[1]')$clickElement()
+```
+
+![](aula_3_web_drivers_files/imagens/rem_dr_7_manda_formulario.png)
