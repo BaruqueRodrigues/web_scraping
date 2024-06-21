@@ -1,0 +1,246 @@
+---
+title: "Aula_4_apis_pt1"
+author: "Baruque rodrigues"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+#### Objetivos:
+
+-   Entender o que são APIs e como utilizá-las para coleta de dados.
+
+-   Aprender a fazer requisições GET e POST utilizando R.
+
+#### Conteúdo:
+
+### 1. Introdução às APIs
+
+#### Definição e Vantagens
+
+**API (Application Programming Interface)**: Conjunto de definições e protocolos que permitem a comunicação entre softwares. É uma ponte que permite que diferentes aplicações possam interagir e trocar dados de maneira estruturada e segura.
+
+**Vantagens das APIs**:
+
+-   Automatização de tarefas repetitivas
+
+-   Integração de diferentes sistemas
+
+-   Acesso a dados em tempo real
+
+-   Possibilidade de uso de serviços externos (ex.: mapas, serviços de pagamento, redes sociais)
+
+#### Tipos de APIs (REST, SOAP)
+
+**REST (Representational State Transfer)**: Arquitetura de software que usa o protocolo HTTP para troca de dados. Vantagens: simplicidade, uso de verbos HTTP, fácil de escalar.
+
+**SOAP (Simple Object Access Protocol)**: Protocolo baseado em XML que permite a troca de informações estruturadas. Vantagens: segurança e robustez.
+
+### 2. Ferramentas para Trabalhar com APIs em R
+
+#### Pacotes: httr, jsonlite e tidyverse
+
+```{r}
+library(tidyverse)
+```
+
+**httr**: Pacote que facilita a comunicação com APIs, permitindo enviar requisições HTTP e lidar com respostas.
+
+```{r, eval = FALSE}
+install.packages("httr") 
+library(httr)
+```
+
+**jsonlite**: Pacote para manipulação de dados JSON, comum em respostas de APIs.
+
+```{r, eval = FALSE}
+install.packages("jsonlite")
+library(jsonlite)`
+```
+
+### 3. Acessando uma API Pública
+
+![](images/clipboard-2281957493.png)
+
+Por que acessar os dados da API da câmara?
+
+-   **Transparência**:
+
+    -   Promove a transparência das atividades legislativas, permitindo que os cidadãos acompanhem de perto as ações dos seus representantes.
+
+-   **Accountability (Responsabilização)**:
+
+    -   Facilita a responsabilização dos deputados, já que os cidadãos podem verificar como votaram em determinados projetos e como estão gastando os recursos públicos.
+
+-   **Engajamento Cívico**:
+
+    -   Aumenta o engajamento cívico, permitindo que os cidadãos se envolvam mais ativamente no processo legislativo e nas políticas públicas.
+
+### Por que é Interesse público
+
+1.  **Acompanhamento da Tramitação e Votações de Projetos**:
+
+    -   Os cidadãos podem acompanhar o progresso dos projetos de lei, emendas, e outras proposições, entendendo melhor o processo legislativo.
+
+2.  **Verificação da Atuação e Gastos dos Deputados**:
+
+    -   Permite que os eleitores verifiquem como os deputados estão atuando e gastando recursos, promovendo uma gestão pública mais responsável e eficiente.
+
+3.  **Transparência em Eventos e Comissões**:
+
+    -   Os dados sobre eventos realizados pelas comissões são importantes para monitorar discussões e decisões que podem impactar diretamente a vida dos cidadãos.
+
+4.  **Facilitação de Pesquisas Acadêmicas e Jornalísticas**:
+
+    -   Disponibiliza informações essenciais para pesquisas acadêmicas, reportagens investigativas e análises políticas, contribuindo para uma sociedade mais bem informada.
+
+5.  **Desenvolvimento de Ferramentas e Aplicações**:
+
+    -   Desenvolvedores e empresas podem criar ferramentas que tornem os dados mais acessíveis e utilizáveis para o público em geral, como aplicativos que alertam sobre votações importantes ou que analisam o desempenho de deputados.
+
+6.  **Participação Informada**:
+
+    -   Com acesso a informações detalhadas, os cidadãos podem tomar decisões mais informadas nas eleições e em outras formas de participação política.
+
+### Do que fala deputado? Analisando o discurso dos Deputados Federais
+
+Para analisar o discurso dos deputados podemos acessar a [API de Dados abertos](https://dadosabertos.camara.leg.br/swagger/api.html)
+
+![](images/clipboard-3002758353.png)
+
+Na aba de deputados encontramos o endpoint da api que contém os discursos feitos pelos deputados
+
+![](images/clipboard-362375849.png)
+
+Podemos executar a requisiçãopelo site da camara, ou podemos copiar o CURL ou o Request Url e mimetizarmos a requisição para o R. Para coletar os dados 2 informações são necessárias. o Id do deputado e o código da legislatura. Ambas as informações estão disponíveis aqui na api da camara.
+
+![](images/clipboard-935669543.png)
+
+#### Executando o processo pelo R
+
+##### Passo 1. baixando as informações dos deputados
+
+```{r, message=FALSE}
+deputados <- readr::read_csv2("https://dadosabertos.camara.leg.br/arquivos/deputados/csv/deputados.csv")
+
+dplyr::glimpse(deputados)
+
+```
+
+Agora temos acesso aos endpoints com o o ID de cada um dos deputados
+
+```{r}
+deputados$uri[[1]]
+```
+
+Nosso objetivo agora é construir o link que indique o endpoint.
+
+```{r}
+legislatura = 57
+stringr::str_glue(deputados$uri[[1]], "/discursos?idLegislatura={legislatura}")
+```
+
+Agora podemos fazer a requisição a esse endpoint utilizando a função read_json
+
+```{r, eval = FALSE}
+dados_api <- stringr::str_glue(deputados$uri[[1]], "/discursos?idLegislatura={legislatura}") %>%
+  jsonlite::fromJSON()
+
+
+```
+
+Apos capturar os dados podemos executar o tratamento
+
+```{r, eval=FALSE}
+dados_api %>% 
+  tibble(data = .) %>% 
+  slice(1) %>% 
+  unnest_wider(data)%>%
+  unnest_longer(everything())
+
+```
+
+### 4. Acessando API's Escondidas
+
+Muitos sites geram o conteúdo html através de um arquivo json. Se encontrarmos o arquivo json podemos trabalhar com dele diretamente, ou seja ao invés de acessarmos os dados entrando na url, clicando em cada um dos botões, e gerando a tabela de visualização, podemos ir direto aos dados.
+
+Para executar esse exemplo vamos acessar o site divulga candidaturas e contas eleitorais, do tse
+
+![](images/clipboard-465857187.png)
+
+Por exemplo como coletamos pelo R os candidatos a deputado federal no estado de São Paulo?
+
+![](images/clipboard-3343262031.png)
+
+O primeiro passo é ver se encontramos a requisição ao JSON mapeando as requisições do navegador ao servidor. Como fazemos isso? Simples acessando a aba de desenvolvimento do navegador via CTRL+SHIFT+C.\
+\
+
+![](images/clipboard-2245661693.png)
+
+Vamos até a aba de network, aqui podemos ver todas as requisições feitas entre navegador e servidor. Aqui iremos procurar arquivos xhr. Nesse caso o objeto já está nomeado como candidatos.
+
+![Uma outra forma de encontrar o .json é buscar um parametro listado na aba de pesquisa do network. Por exemplo vamos procurar o candidato Abdul](images/clipboard-647055524.png)
+
+![](images/clipboard-2088782663.png)
+
+Aqui foi nos indicado qual objeto contém a informação com o nome do candidato, o procedimento agora é copiar e mimetizar a requisição. Fazemos isso clicando com o botão direito e copiando a requisição como CURL![](images/clipboard-3078629824.png)
+
+```{r, eval=FALSE}
+"curl 'https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/listar/2022/SP/2040602022/7/candidatos' \
+-H 'Accept: application/json, text/plain, */*' \
+-H 'Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7' \
+-H 'Connection: keep-alive' \
+-H 'Cookie: _d8a23=f27b6b6091045596; TS01efa917=0103a0ceae8cba8f52a3da14dae015ad4795e26653bc487fba64d4d8141b5ccef10a2dd7febd69b018c1e1a4fedee2285ad7ede73c2e5ba10842afb9a4455d3516bf04d85f' \
+-H 'Referer: https://divulgacandcontas.tse.jus.br/' \
+-H 'Sec-Fetch-Dest: empty' \
+-H 'Sec-Fetch-Mode: cors' \
+-H 'Sec-Fetch-Site: same-origin' \
+-H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 OPR/109.0.0.0' \
+-H 'sec-ch-ua: \"Opera GX\";v=\"109\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"123\"' \
+-H 'sec-ch-ua-mobile: ?0' \
+-H 'sec-ch-ua-platform: \"Windows\"'" %>% 
+  httr2::curl_translate()
+
+
+```
+
+Copiamos a url e podemos fazer a requisição via jsonlite::read_json()
+
+```{r, eval=FALSE}
+
+url <- "https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/listar/2022/SP/2040602022/7/candidatos"
+
+dados_brutos <- jsonlite::read_json(url) 
+
+
+```
+
+Em seguida só precisamos estruturar os dados
+
+```{r, eval=FALSE}
+dados_brutos$candidatos %>% 
+  dplyr::tibble(data =.) %>%
+  tidyr::unnest_wider(data) %>%
+  janitor::clean_names() 
+```
+
+### Exercícios
+
+Como exercício vamos acessar o site da [tabela fipe](https://veiculos.fipe.org.br) e vamos coletar alguns dados sobre preço de carros.
+
+![](images/clipboard-3758468519.png)
+
+Acesse a consulta de Carros de Utilitários, identifique a API e extraia o preço de todos os carros de uma das marcas, para os três primeiros meses de referência de 2024
+
+1.  BMW
+
+2.  Audi
+
+3.  Volvo
+
+![](images/clipboard-1679308730.png)
+
+Retorne os dados estruturados em um formato tibble como esse:
+
+![](images/clipboard-2677279476.png)

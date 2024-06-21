@@ -1,0 +1,311 @@
+---
+title: "aula_5_automacao"
+author: "Baruque rodrigues"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+### Automação das Rotinas de Webscraping
+
+### 1. Introdução à Criação de Pacotes em R
+
+#### O que é um pacote?
+
+Um pacote em R é uma coleção organizada de funções, dados e documentação que é utilizada para resolver problemas específicos de forma eficiente e reutilizável. Pacotes facilitam a distribuição e a implementação de código, tornando-o mais modular e acessível para outros desenvolvedores e usuários.
+
+#### Vantagens de Criar Pacotes
+
+-   **Organização do Código:** Pacotes permitem que você organize seu código de maneira lógica e estruturada. Em vez de ter scripts dispersos, você pode agrupar funções relacionadas e dados em um único pacote.
+
+-   **Reutilização e Compartilhamento:** Com um pacote, você pode facilmente compartilhar suas soluções com outros membros da equipe ou a comunidade em geral. Isso promove a reutilização de código, economizando tempo e esforço na implementação de funcionalidades comuns.
+
+-   **Manutenção e Escalabilidade:** Pacotes facilitam a manutenção do código, permitindo atualizações e correções de bugs de maneira centralizada. Além disso, pacotes bem estruturados são mais fáceis de escalar, adicionando novas funcionalidades ou melhorando as existentes sem comprometer a integridade do código.
+
+#### 2. Estrutura de Diretórios e Arquivos
+
+A criação de um pacote envolve a configuração de uma estrutura de diretórios e arquivos específica. A seguir estão os componentes básicos de um pacote R:
+
+-   **DESCRIPTION:** Contém metadados do pacote, como nome, versão, autor, descrição, dependências, entre outros. É essencial para definir as características e requisitos do pacote.
+
+    -   Exemplo de um arquivo DESCRIPTION:
+
+        {{ \< Package: meu_pacote Type: Package Title: Meu Pacote Exemplo Version: 0.1.0 Author: Seu Nome Maintainer: Seu Nome [seu.email\@example.com](mailto:seu.email@example.com){.email} Description: Este é um pacote de exemplo para web scraping. License: MIT Imports: rvest, httr, dplyr \>}}
+
+-   **NAMESPACE:** Declara as funções que serão exportadas e importadas. Controla a visibilidade das funções dentro e fora do pacote.
+
+    {{\< \# Exporta a função 'minha_funcao' export(minha_funcao)
+
+    # Importa funções específicas de outros pacotes
+
+    importFrom(dplyr, filter, select) importFrom(rvest, read_html) \>}}
+
+-   **R/:** Diretório que contém os scripts R com as funções do pacote. Cada arquivo neste diretório geralmente contém uma ou mais funções relacionadas.
+
+    -   Exemplo de uma função em um arquivo `minha_funcao.R`:
+
+        ```{r, eval = FALSE}
+        #' Minha Funcao
+        #'
+        #' Esta função faz uma tarefa específica de web scraping.
+        #'
+        #' @param url Uma string com a URL a ser raspada.
+        #' @return Um dataframe com os dados raspados.
+        #' @export
+        minha_funcao <- function(url) {
+          pagina <- read_html(url)
+          dados <- pagina %>% html_nodes("table") %>% html_table()
+          return(dados[[1]])
+        }
+
+        ```
+
+-   **man/:** Diretório de documentação das funções. Os arquivos de documentação são gerados a partir dos comentários roxygen2 nas funções.
+
+    -   Exemplo de um arquivo de documentação
+
+        ```{r, eval=FALSE}
+        \name{minha_funcao}
+        \alias{minha_funcao}
+        \title{Minha Funcao}
+        \description{Esta função faz uma tarefa específica de web scraping.}
+        \usage{minha_funcao(url)}
+        \arguments{
+          \item{url}{Uma string com a URL a ser raspada.}
+        }
+        \value{
+          Um dataframe com os dados raspados.
+        }
+
+        ```
+
+-   **data/:** Diretório para armazenar conjuntos de dados incluídos no pacote, se houver. Esses dados podem ser utilizados pelas funções do pacote ou disponibilizados para os usuários.
+
+    #### Criando a Estrutura Básica
+
+    A estrutura básica de um pacote em R é composta por vários diretórios e arquivos que organizam o código, a documentação e os metadados do pacote. Para criar a estrutura básica de um pacote, podemos utilizar a função `create_package()` do pacote usethis:
+
+    ```{r, eval = FALSE}
+    # Instale o pacote usethis se ainda não o tiver
+    install.packages("usethis")
+
+    # Carregue o pacote usethis
+    library(usethis)
+
+    # Crie a estrutura básica do pacote
+    create_package("caminho/para/seu_pacote")
+
+    ```
+
+### 3. Documentação e Funções
+
+Documentar suas funções é uma parte crucial do desenvolvimento de pacotes em R. A documentação ajuda outros usuários (e a você mesmo no futuro) a entender como usar suas funções corretamente. Em R, a documentação é frequentemente feita com o pacote `roxygen2`, que permite adicionar comentários diretamente no código e gerar automaticamente os arquivos de documentação.
+
+##### Instalando e Configurando roxygen2
+
+Primeiro, certifique-se de que o pacote `roxygen2` está instalado:
+
+```{r, eval = FALSE}
+install.packages("roxygen2")
+
+```
+
+Geralmente o roxygen já vem junto com o Rstudio, mas é importante sabermos se ele está na sua máquina.
+
+##### Adicionando Documentação às Funções
+
+Para documentar uma função, você adiciona comentários especiais acima da definição da função. Esses comentários são precedidos por `#'`.
+
+Exemplo de uma função documentada:
+
+```{r, eval = FALSE}
+#' Minha Funcao
+#'
+#' Esta função faz uma tarefa específica de web scraping.
+#'
+#' @param url Uma string com a URL a ser raspada.
+#' @return Um dataframe com os dados raspados.
+#' @export
+minha_funcao <- function(url) {
+  pagina <- read_html(url)
+  dados <- pagina %>% html_nodes("table") %>% html_table()
+  return(dados[[1]])
+}
+
+```
+
+##### Gerando a Documentação
+
+Depois de adicionar os comentários de documentação, você pode gerar os arquivos de documentação (.Rd) com o seguinte comando:
+
+```{r, eval=FALSE}
+devtools::document()
+
+```
+
+Este comando cria arquivos .Rd na pasta `man/`, que contêm a documentação formatada de suas funções.
+
+#### Criando Funções Reutilizáveis
+
+Escrever funções modulares e bem documentadas é essencial para a criação de pacotes eficientes. Aqui estão algumas práticas recomendadas:
+
+-   **Funções Modulares:** Escreva funções que realizam uma única tarefa específica. Isso facilita a manutenção e a reutilização do código.
+
+-   **Boas Práticas de Nomeação:** Use nomes de funções claros e descritivos. Funções que realizam operações semelhantes devem ter nomes consistentes.
+
+-   **Documentação Completa:** Sempre documente seus parâmetros, valores de retorno e qualquer comportamento importante da função.
+
+Exemplo de uma função modular e bem documentada:
+
+```{r, eval = FALSE}
+#' Raspar Tabela de uma Página Web
+#'
+#' Esta função raspas tabelas de uma página web específica.
+#'
+#' @param url Uma string com a URL da página a ser raspada.
+#' @return Um dataframe contendo os dados da tabela raspada.
+#' @export
+raspar_tabela <- function(url) {
+  # Ler o conteúdo da página web
+  pagina <- read_html(url)
+  # Extrair a tabela
+  tabela <- pagina %>% html_nodes("table") %>% html_table()
+  # Retornar o primeiro dataframe (caso haja mais de uma tabela)
+  return(tabela[[1]])
+}
+
+```
+
+### 4. Automação de Rotinas de Web Scraping
+
+Automatizar rotinas de web scraping é uma prática poderosa que permite coletar dados de maneira contínua e eficiente. Nesta seção, veremos como criar scripts automatizados de web scraping e como agendar a execução dessas tarefas.
+
+#### Scripts Automatizados
+
+Para automatizar o web scraping, você precisa criar scripts que possam ser executados de forma autônoma, sem intervenção manual. Abaixo está um exemplo de script R que realiza web scraping:
+
+#### Scripts Automatizados
+
+Para automatizar o web scraping, você precisa criar scripts que possam ser executados de forma autônoma, sem intervenção manual. Abaixo está um exemplo de script R que realiza web scraping:
+
+```{r, eval = FALSE}
+raspar_dados <- function(url) {
+  pagina <- rvest::read_html(url)
+  tabela <- pagina |> rvest::html_nodes("table") |> rvest::html_table()
+  return(tabela[[1]])
+}
+
+# URL do site a ser raspado
+url <- "https://exemplo.com/tabela"
+
+# Raspando os dados
+dados <- raspar_dados(url)
+
+# Salvando os dados em um arquivo CSV
+write.csv(dados, "dados_raspados.csv", row.names = FALSE)
+```
+
+#### Agendamento de Tarefas
+
+Para garantir que o script seja executado regularmente, podemos agendar sua execução utilizando cron jobs diretamente no R.
+
+##### Cron Jobs no R
+
+No Linux/Mac, cron jobs são tarefas agendadas que podem ser configuradas para executar scripts em intervalos regulares. Vamos usar o pacote `cronR` para facilitar essa tarefa diretamente no R.
+
+##### Instalando e Configurando o `cronR`
+
+Primeiro, certifique-se de que o pacote `cronR` está instalado:
+
+```{r, eval = FALSE}
+install.packages("cronR")
+
+```
+
+##### Criando um Job com `cronR`
+
+1.  **Criar um Comando Cron:** Definimos o comando cron que executará nosso script. O script deve estar salvo em um arquivo, por exemplo, `meu_script.R`.
+
+    ```{r, eval = FALSE}
+    script_path <- "/caminho/para/meu_script.R"
+    cron_cmd <- cron_rscript(script_path)
+
+    ```
+
+2.  **Adicionar o Job ao Crontab:** Adicione uma tarefa ao crontab que execute o script todos os dias às 2:00 AM.
+
+    ```{r, eval = FALSE}
+    cron_add(cron_cmd, frequency = "daily", at = "2AM", id = "meu_webscraper", description = "Tarefa de Web Scraping diária")
+
+    ```
+
+3.  **Listar Tarefas Agendadas:**
+    Para verificar as tarefas agendadas:
+
+    ```{r, eval = FALSE}
+    cron_ls()
+
+    ```
+
+4.  **Remover um Job:**
+    Para remover uma tarefa agendada:
+
+    ```{r, eval = FALSE}
+    cron_rm("meu_webscraper")
+
+    ```
+
+Automatizar rotinas de web scraping não só economiza tempo, mas também garante a coleta consistente e atualizada de dados. Usar scripts bem estruturados e agendá-los corretamente são passos fundamentais para uma automação eficaz. O uso de pacotes como `cronR` facilita ainda mais o processo de agendamento diretamente no R, proporcionando uma solução integrada e eficiente.
+
+### 5. Publicação e Distribuição de Pacotes
+
+Publicar e distribuir pacotes R permite que você compartilhe suas funções e dados com a comunidade, facilitando a colaboração e a reutilização do código. A seguir, veremos como compartilhar seu pacote no GitHub.
+
+#### Preparação do pacote
+
+-   Certifique-se de que seu pacote está em conformidade com as diretrizes do CRAN. A documentação oficial do CRAN contém todos os requisitos necessários.
+
+-   Adicione todos os pacotes utilizados nas funções via `use_package`
+
+    ```{r, eval = FALSE}
+    usethis::use_package("dplyr")
+
+    ```
+
+-   Verifique se todos os testes estão passando e se não há problemas de compilação
+
+    ```{r, eval = FALSE}
+    devtools::check()
+
+    ```
+
+#### Compartilhamento no GitHub
+
+GitHub é uma plataforma popular para hospedagem e colaboração de código. Publicar seu pacote no GitHub é um excelente primeiro passo para distribuí-lo.
+
+**Criar um Repositório no GitHub:**
+
+-   Acesse [GitHub](https://github.com) e crie uma conta se ainda não tiver uma.
+
+-   Clique em ["New"](https://github.com/new) para criar um novo repositório.
+
+    ![](images/clipboard-1300056588.png)
+
+-   Dê um nome ao seu repositório, adicione uma descrição e escolha se ele será público ou privado.
+
+    ![](images/clipboard-3822188115.png)
+
+-   Clique em "Create repository".
+
+-   Adicionando arquivos
+
+    -   Por padrão fazemos os uploads de arquivos via bash, todavia iremos apresentar nesse curso como fazer esse procedimento via webpage do github, pois acreditamos que esse método é menos sucetível a erros para novos usuários de R que não tem interesse em versionamento
+
+    -   Entre no link do seu pacote e clique em uploading an existing file
+
+        ![](images/clipboard-2175348657.png)
+
+    -   Clique em choose files e selecione o diretório. Em seguida clique em commit changes
+
+        ![](images/clipboard-2456165045.png)
